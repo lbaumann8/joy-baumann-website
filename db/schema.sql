@@ -15,3 +15,7 @@ CREATE INDEX IF NOT EXISTS idx_reviews_ip_hash_created ON reviews (ip_hash, crea
 -- Drop fields retired from the review form (idempotent for already-provisioned databases).
 ALTER TABLE reviews DROP COLUMN IF EXISTS email;
 ALTER TABLE reviews DROP COLUMN IF EXISTS category;
+
+-- Reviews now publish immediately on submission — approval is no longer required.
+ALTER TABLE reviews ALTER COLUMN status SET DEFAULT 'approved';
+UPDATE reviews SET status = 'approved' WHERE status = 'pending';

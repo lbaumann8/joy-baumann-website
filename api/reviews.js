@@ -66,7 +66,7 @@ async function handleGet(req, res) {
   const rows = await sql`
     SELECT id, name, rating, review_text, created_at
     FROM reviews
-    WHERE status = 'approved'
+    WHERE status != 'rejected'
     ORDER BY created_at DESC
     LIMIT 200
   `;
@@ -132,12 +132,13 @@ async function handlePost(req, res) {
     }
   }
 
-  await sql`
+  const [inserted] = await sql`
     INSERT INTO reviews (name, rating, review_text, status, ip_hash)
-    VALUES (${value.name}, ${value.rating}, ${value.reviewText}, 'pending', ${ipHash})
+    VALUES (${value.name}, ${value.rating}, ${value.reviewText}, 'approved', ${ipHash})
+    RETURNING id, name, rating, review_text, created_at
   `;
 
-  res.status(201).json({ ok: true });
+  res.status(201).json({ ok: true, review: inserted });
 }
 
 export default async function handler(req, res) {

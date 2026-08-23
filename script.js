@@ -206,6 +206,27 @@ contactForm.addEventListener('submit', (e) => {
     return card;
   }
 
+  function computeSummary(reviews) {
+    const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    let total = 0;
+    reviews.forEach((r) => {
+      breakdown[r.rating] = (breakdown[r.rating] || 0) + 1;
+      total += r.rating;
+    });
+    const count = reviews.length;
+    const average = count > 0 ? Math.round((total / count) * 10) / 10 : 0;
+    return { average, count, breakdown };
+  }
+
+  function addNewReview(review) {
+    allReviews = [review, ...allReviews];
+    renderSummary(computeSummary(allReviews));
+    emptyEl.hidden = true;
+    gridEl.hidden = false;
+    renderGrid();
+    renderTestimonialStrip(allReviews);
+  }
+
   function renderGrid() {
     gridEl.innerHTML = '';
     const toShow = allReviews.slice(0, visibleCount);
@@ -553,6 +574,7 @@ contactForm.addEventListener('submit', (e) => {
       if (res.ok && data.ok) {
         resetForm();
         showSuccessView();
+        if (data.review) addNewReview(data.review);
       } else if (res.status === 400 && data.errors) {
         Object.entries(data.errors).forEach(([field, message]) => setFieldError(field, message));
       } else {
