@@ -129,6 +129,43 @@
     </div>
   </section>
 
+  <!-- KIND WORDS / REVIEWS -->
+  <section class="section" id="reviews">
+    <div class="reviews-motif" aria-hidden="true"></div>
+    <div class="section-inner">
+      <p class="kicker">Kind Words</p>
+      <h2 class="section-title">Kind Words</h2>
+      <p class="section-intro">Experiences shared by those who have worked with Joy.</p>
+
+      <div class="reviews-summary" id="reviewsSummary" hidden>
+        <p class="reviews-summary-score">
+          <span class="reviews-summary-number" id="reviewsAverage">0</span>
+          <span class="reviews-summary-stars" id="reviewsAverageStars" aria-hidden="true"></span>
+        </p>
+        <p class="reviews-summary-count" id="reviewsCount"></p>
+        <div class="reviews-breakdown" id="reviewsBreakdown"></div>
+      </div>
+
+      <div class="reviews-actions">
+        <button type="button" class="btn btn-outline" id="leaveReviewBtn">Leave a Review</button>
+      </div>
+
+      <div class="reviews-grid" id="reviewsGrid" hidden></div>
+
+      <div class="reviews-empty" id="reviewsEmpty" hidden>
+        <p class="placeholder-copy center">Be the first to share your experience.</p>
+      </div>
+
+      <div class="reviews-loading" id="reviewsLoading">
+        <p class="placeholder-copy center">Loading reviews&hellip;</p>
+      </div>
+
+      <div class="reviews-more-wrap" id="reviewsMoreWrap" hidden>
+        <button type="button" class="reviews-more" id="reviewsMoreBtn">View More Reviews</button>
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section class="section section-alt" id="contact">
     <div class="section-inner narrow">
@@ -158,6 +195,85 @@
   </section>
 
 </main>
+
+<!-- LEAVE A REVIEW MODAL -->
+<div class="review-modal-overlay" id="reviewModalOverlay" hidden>
+  <div class="review-modal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle" id="reviewModal">
+    <button type="button" class="review-modal-close" id="reviewModalClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M1 1 L15 15 M15 1 L1 15"/></svg>
+    </button>
+
+    <div class="review-modal-view" id="reviewFormView">
+      <p class="kicker">Share Your Experience</p>
+      <h3 class="review-modal-title" id="reviewModalTitle">Leave a Review</h3>
+
+      <form class="review-form" id="reviewForm" novalidate>
+        <div class="field">
+          <label for="reviewName">Your Name</label>
+          <input type="text" id="reviewName" name="name" required minlength="2" maxlength="80" autocomplete="name" aria-describedby="reviewNameError">
+          <p class="field-error" id="reviewNameError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="reviewEmail">Your Email</label>
+          <input type="email" id="reviewEmail" name="email" required maxlength="254" autocomplete="email" aria-describedby="reviewEmailHint reviewEmailError">
+          <p class="field-hint" id="reviewEmailHint">Your email will not be displayed publicly.</p>
+          <p class="field-error" id="reviewEmailError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <span class="field-label-static" id="reviewRatingLabel">Rating</span>
+          <div class="star-rating" role="radiogroup" aria-labelledby="reviewRatingLabel" id="starRating">
+            <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="1 star" data-value="1">★</button>
+            <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="2 stars" data-value="2">★</button>
+            <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="3 stars" data-value="3">★</button>
+            <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="4 stars" data-value="4">★</button>
+            <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="5 stars" data-value="5">★</button>
+          </div>
+          <input type="hidden" id="reviewRating" name="rating" value="">
+          <p class="field-error" id="reviewRatingError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="reviewCategory">What did you work with Joy on? <span class="field-optional">(Optional)</span></label>
+          <select id="reviewCategory" name="category">
+            <option value="">Prefer not to say</option>
+            <option value="Grief Work">Grief Work</option>
+            <option value="Spiritual Healing">Spiritual Healing</option>
+            <option value="Trauma Resolution">Trauma Resolution</option>
+            <option value="Spiritual Integration">Spiritual Integration</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="reviewText">Your Review</label>
+          <textarea id="reviewText" name="review_text" rows="5" required minlength="20" maxlength="1500" placeholder="Tell us about your experience…" aria-describedby="reviewCharCount reviewTextError"></textarea>
+          <p class="field-char-count" id="reviewCharCount">0 / 1500</p>
+          <p class="field-error" id="reviewTextError" role="alert"></p>
+        </div>
+
+        <div class="field-honeypot" aria-hidden="true">
+          <label for="reviewWebsite">Website</label>
+          <input type="text" id="reviewWebsite" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <p class="review-form-error" id="reviewFormError" role="alert"></p>
+
+        <button type="submit" class="btn btn-primary" id="reviewSubmitBtn">Submit Review</button>
+
+        <p class="form-note">Your email will never be displayed publicly. Reviews are reviewed before appearing on the website.</p>
+      </form>
+    </div>
+
+    <div class="review-success-view" id="reviewSuccessView" hidden>
+      <p class="review-success-mark" aria-hidden="true">&#10022;</p>
+      <h3 class="review-modal-title">Thank you for sharing your experience.</h3>
+      <p class="placeholder-copy center">Your review has been submitted and will appear after it has been reviewed.</p>
+      <button type="button" class="btn btn-outline" id="reviewSuccessCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
 
 <footer class="site-footer">
   <div class="footer-inner">

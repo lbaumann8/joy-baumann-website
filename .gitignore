@@ -6,6 +6,9 @@
 # Vercel
 .vercel
 
+# Node
+node_modules/
+
 # Editor / IDE
 .vscode/
 .idea/
@@ -20,3 +23,4 @@
 
 # Unused raw source images (not referenced by the site)
 assets-src/
+.env*.local
