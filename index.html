@@ -14,15 +14,15 @@
 
 <header class="site-header">
   <div class="site-header-inner">
-    <a href="#hero" class="site-wordmark">Joy Baumann</a>
+    <a href="/" class="site-wordmark">Joy Baumann</a>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
       <span></span><span></span><span></span>
     </button>
     <nav class="site-nav" id="siteNav" aria-label="Primary">
-      <a href="#her-story">Her Story</a>
-      <a href="#chapter-two">Chapters</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#contact">Contact</a>
+      <a href="/#her-story">Her Story</a>
+      <a href="/#chapter-two">Chapters</a>
+      <a href="/#reviews">Reviews</a>
+      <a href="/contact">Contact</a>
     </nav>
   </div>
 </header>
@@ -108,24 +108,6 @@
     <span class="story-connector-line"></span>
   </div>
 
-  <!-- FEATURED REVIEW STRIP -->
-  <section class="testimonial-strip" id="testimonialStrip" aria-label="Featured client reviews" hidden>
-    <div class="testimonial-strip-motif" aria-hidden="true"></div>
-    <div class="testimonial-strip-inner">
-      <button type="button" class="testimonial-nav testimonial-nav-prev" id="testimonialPrev" aria-label="Previous review" hidden>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1 L2 8 L9 15"/></svg>
-      </button>
-
-      <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
-
-      <button type="button" class="testimonial-nav testimonial-nav-next" id="testimonialNext" aria-label="Next review" hidden>
-        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 8 L1 15"/></svg>
-      </button>
-    </div>
-
-    <div class="testimonial-dots" id="testimonialDots" hidden></div>
-  </section>
-
   <!-- KIND WORDS / REVIEWS -->
   <section class="section" id="reviews">
     <div class="reviews-motif" aria-hidden="true"></div>
@@ -133,31 +115,8 @@
       <h2 class="section-title section-title-lead">Kind Words</h2>
       <p class="section-intro">Experiences shared by those who have worked with Joy.</p>
 
-      <div class="reviews-summary" id="reviewsSummary" hidden>
-        <p class="reviews-summary-score">
-          <span class="reviews-summary-number" id="reviewsAverage">0</span>
-          <span class="reviews-summary-stars" id="reviewsAverageStars" aria-hidden="true"></span>
-        </p>
-        <p class="reviews-summary-count" id="reviewsCount"></p>
-        <div class="reviews-breakdown" id="reviewsBreakdown"></div>
-      </div>
-
       <div class="reviews-actions">
         <button type="button" class="btn btn-outline" id="leaveReviewBtn">Leave a Review</button>
-      </div>
-
-      <div class="reviews-grid" id="reviewsGrid" hidden></div>
-
-      <div class="reviews-empty" id="reviewsEmpty" hidden>
-        <p class="placeholder-copy center">Be the first to share your experience.</p>
-      </div>
-
-      <div class="reviews-loading" id="reviewsLoading">
-        <p class="placeholder-copy center">Loading reviews&hellip;</p>
-      </div>
-
-      <div class="reviews-more-wrap" id="reviewsMoreWrap" hidden>
-        <button type="button" class="reviews-more" id="reviewsMoreBtn">View More Reviews</button>
       </div>
     </div>
   </section>
@@ -168,32 +127,13 @@
     <span class="story-connector-line"></span>
   </div>
 
-  <!-- CONTACT -->
-  <section class="section section-alt" id="contact">
-    <div class="section-inner narrow">
-      <p class="kicker">Get in Touch</p>
-      <h2 class="section-title">Contact Us</h2>
-      <p class="section-intro">
-        Have a question, memory, photograph, document, or story you would like to share? Please use the form below to get in touch.
-      </p>
-
-      <form class="contact-form" id="contactForm">
-        <div class="field">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" required>
-        </div>
-        <div class="field">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div class="field">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Send Message</button>
-        <p class="form-note" id="formNote" role="status"></p>
-      </form>
+  <!-- FEATURED REVIEW STRIP -->
+  <section class="testimonial-strip" id="testimonialStrip" aria-label="Featured client reviews" hidden>
+    <div class="testimonial-strip-inner">
+      <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
     </div>
+
+    <div class="testimonial-dots" id="testimonialDots" aria-hidden="true" hidden></div>
   </section>
 
 </main>
@@ -266,10 +206,10 @@
       </svg>
     </span>
     <nav class="footer-links" aria-label="Footer">
-      <a href="#her-story">Her Story</a>
-      <a href="#chapter-two">Chapters</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#contact">Contact</a>
+      <a href="/#her-story">Her Story</a>
+      <a href="/#chapter-two">Chapters</a>
+      <a href="/#reviews">Reviews</a>
+      <a href="/contact">Contact</a>
     </nav>
     <p class="footer-copy">&copy; <span id="year"></span> Joy Baumann. All rights reserved.</p>
   </div>

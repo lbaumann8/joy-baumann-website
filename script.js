@@ -38,22 +38,32 @@ siteNav.querySelectorAll('a').forEach((link) => {
   updateHeaderState();
 })();
 
-// Scroll-spy: highlight the nav link for the section currently in view
-(function initScrollSpy() {
-  const navLinks = Array.from(siteNav.querySelectorAll('a[href^="#"]'));
-  if (navLinks.length === 0 || !('IntersectionObserver' in window)) return;
+// Active nav state: scroll-spy on the homepage, static on /contact
+(function initNavActiveState() {
+  const allNavLinks = Array.from(siteNav.querySelectorAll('a'));
+  if (allNavLinks.length === 0) return;
 
-  const sections = navLinks
-    .map((link) => document.querySelector(link.getAttribute('href')))
-    .filter(Boolean);
+  const isContactPage = window.location.pathname.replace(/\/index\.html$/, '/') === '/contact'
+    || window.location.pathname.endsWith('/contact.html');
 
-  if (sections.length === 0) return;
-
-  function setActiveLink(id) {
-    navLinks.forEach((link) => {
-      link.classList.toggle('is-active', link.getAttribute('href') === `#${id}`);
+  function setActiveLink(href) {
+    allNavLinks.forEach((link) => {
+      link.classList.toggle('is-active', link.getAttribute('href') === href);
     });
   }
+
+  if (isContactPage) {
+    setActiveLink('/contact');
+    return;
+  }
+
+  const hashLinks = allNavLinks
+    .map((link) => ({ link, hash: (link.getAttribute('href') || '').split('#')[1] }))
+    .filter((entry) => entry.hash)
+    .map((entry) => ({ ...entry, section: document.getElementById(entry.hash) }))
+    .filter((entry) => entry.section);
+
+  if (hashLinks.length === 0 || !('IntersectionObserver' in window)) return;
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -61,43 +71,35 @@ siteNav.querySelectorAll('a').forEach((link) => {
         .filter((entry) => entry.isIntersecting)
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
       if (visible.length > 0) {
-        setActiveLink(visible[0].target.id);
+        const match = hashLinks.find((entry) => entry.section === visible[0].target);
+        if (match) setActiveLink(match.link.getAttribute('href'));
       }
     },
     { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
   );
 
-  sections.forEach((section) => observer.observe(section));
+  hashLinks.forEach((entry) => observer.observe(entry.section));
 })();
 
 // Contact form (placeholder submit handler — no backend wired up yet)
 const contactForm = document.getElementById('contactForm');
 const formNote = document.getElementById('formNote');
 
-contactForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  formNote.textContent = 'Thank you — your message has been received.';
-  contactForm.reset();
-});
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    formNote.textContent = 'Thank you — your message has been received.';
+    contactForm.reset();
+  });
+}
 
 // ---------- Reviews ----------
 (function initReviews() {
   const section = document.getElementById('reviews');
   if (!section) return;
 
-  const INITIAL_VISIBLE = 6;
   const REVIEW_TEXT_MAX = 1500;
 
-  const summaryEl = document.getElementById('reviewsSummary');
-  const averageEl = document.getElementById('reviewsAverage');
-  const averageStarsEl = document.getElementById('reviewsAverageStars');
-  const countEl = document.getElementById('reviewsCount');
-  const breakdownEl = document.getElementById('reviewsBreakdown');
-  const gridEl = document.getElementById('reviewsGrid');
-  const emptyEl = document.getElementById('reviewsEmpty');
-  const loadingEl = document.getElementById('reviewsLoading');
-  const moreWrapEl = document.getElementById('reviewsMoreWrap');
-  const moreBtnEl = document.getElementById('reviewsMoreBtn');
   const leaveReviewBtn = document.getElementById('leaveReviewBtn');
 
   const overlay = document.getElementById('reviewModalOverlay');
@@ -127,7 +129,6 @@ contactForm.addEventListener('submit', (e) => {
   };
 
   let allReviews = [];
-  let visibleCount = INITIAL_VISIBLE;
   let lastFocusedEl = null;
   let currentRating = 0;
 
@@ -140,108 +141,17 @@ contactForm.addEventListener('submit', (e) => {
     return out;
   }
 
-  function formatDate(iso) {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return '';
-    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  }
-
-  function renderSummary(summary) {
-    if (!summary || summary.count === 0) {
-      summaryEl.hidden = true;
-      return;
-    }
-    summaryEl.hidden = false;
-    averageEl.textContent = summary.average.toFixed(1);
-    averageStarsEl.innerHTML = starGlyphs(summary.average);
-    countEl.textContent = `Based on ${summary.count} review${summary.count === 1 ? '' : 's'}`;
-
-    breakdownEl.innerHTML = '';
-    for (let star = 5; star >= 1; star--) {
-      const n = summary.breakdown[star] || 0;
-      const pct = summary.count > 0 ? Math.round((n / summary.count) * 100) : 0;
-      const row = document.createElement('div');
-      row.className = 'reviews-breakdown-row';
-      row.innerHTML = `
-        <span class="reviews-breakdown-label">${star} star${star === 1 ? '' : 's'}</span>
-        <span class="reviews-breakdown-track"><span class="reviews-breakdown-fill" style="width:${pct}%"></span></span>
-        <span class="reviews-breakdown-count">${n}</span>
-      `;
-      breakdownEl.appendChild(row);
-    }
-  }
-
-  function renderCard(review) {
-    const card = document.createElement('article');
-    card.className = 'review-card';
-
-    const stars = document.createElement('div');
-    stars.className = 'review-card-stars';
-    stars.setAttribute('aria-label', `Rated ${review.rating} out of 5 stars`);
-    stars.innerHTML = starGlyphs(review.rating);
-
-    const text = document.createElement('p');
-    text.className = 'review-card-text';
-    text.textContent = `“${review.review_text}”`;
-
-    const meta = document.createElement('div');
-    meta.className = 'review-card-meta';
-
-    const name = document.createElement('span');
-    name.className = 'review-card-name';
-    name.textContent = `— ${review.name}`;
-
-    const details = document.createElement('span');
-    details.className = 'review-card-details';
-    const date = formatDate(review.created_at);
-    details.textContent = date;
-
-    meta.appendChild(name);
-    if (date) meta.appendChild(details);
-
-    card.appendChild(stars);
-    card.appendChild(text);
-    card.appendChild(meta);
-    return card;
-  }
-
-  function computeSummary(reviews) {
-    const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    let total = 0;
-    reviews.forEach((r) => {
-      breakdown[r.rating] = (breakdown[r.rating] || 0) + 1;
-      total += r.rating;
-    });
-    const count = reviews.length;
-    const average = count > 0 ? Math.round((total / count) * 10) / 10 : 0;
-    return { average, count, breakdown };
-  }
-
   function addNewReview(review) {
     allReviews = [review, ...allReviews];
-    renderSummary(computeSummary(allReviews));
-    emptyEl.hidden = true;
-    gridEl.hidden = false;
-    renderGrid();
     renderTestimonialStrip(allReviews);
   }
 
-  function renderGrid() {
-    gridEl.innerHTML = '';
-    const toShow = allReviews.slice(0, visibleCount);
-    toShow.forEach((review) => gridEl.appendChild(renderCard(review)));
-    moreWrapEl.hidden = visibleCount >= allReviews.length;
-  }
-
-  // ----- Featured review strip -----
+  // ----- Featured review strip: slow, continuous, non-interactive carousel -----
   const stripEl = document.getElementById('testimonialStrip');
   const stripViewport = document.getElementById('testimonialViewport');
-  const stripPrev = document.getElementById('testimonialPrev');
-  const stripNext = document.getElementById('testimonialNext');
   const stripDots = document.getElementById('testimonialDots');
 
-  const STRIP_INTERVAL_MS = 6000;
+  const STRIP_INTERVAL_MS = 7000;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let stripReviews = [];
   let stripIndex = 0;
@@ -273,13 +183,24 @@ contactForm.addEventListener('submit', (e) => {
     return slide;
   }
 
+  function renderEmptyStripSlide() {
+    const slide = document.createElement('div');
+    slide.className = 'testimonial-slide';
+
+    const quote = document.createElement('blockquote');
+    quote.className = 'testimonial-quote';
+    quote.textContent = 'Be the first to share your experience.';
+
+    slide.appendChild(quote);
+    return slide;
+  }
+
   function updateStripActive() {
     Array.from(stripViewport.children).forEach((slide, i) => {
       slide.classList.toggle('is-active', i === stripIndex);
     });
     Array.from(stripDots.children).forEach((dot, i) => {
       dot.classList.toggle('is-active', i === stripIndex);
-      dot.setAttribute('aria-current', i === stripIndex ? 'true' : 'false');
     });
   }
 
@@ -296,11 +217,10 @@ contactForm.addEventListener('submit', (e) => {
     stripTimer = window.setInterval(() => goToStripSlide(stripIndex + 1), STRIP_INTERVAL_MS);
   }
 
-  function goToStripSlide(index, isManual) {
+  function goToStripSlide(index) {
     if (stripReviews.length === 0) return;
     stripIndex = (index + stripReviews.length) % stripReviews.length;
     updateStripActive();
-    if (isManual) startStripTimer();
   }
 
   function renderTestimonialStrip(reviews) {
@@ -308,78 +228,46 @@ contactForm.addEventListener('submit', (e) => {
     stopStripTimer();
     stripViewport.innerHTML = '';
     stripDots.innerHTML = '';
+    stripIndex = 0;
 
     if (stripReviews.length === 0) {
-      stripEl.hidden = true;
+      stripEl.hidden = false;
+      stripViewport.appendChild(renderEmptyStripSlide());
+      updateStripActive();
       return;
     }
 
     stripEl.hidden = false;
-    stripIndex = 0;
 
     stripReviews.forEach((review, i) => {
       stripViewport.appendChild(renderStripSlide(review, i, stripReviews.length));
 
-      const dot = document.createElement('button');
-      dot.type = 'button';
+      const dot = document.createElement('span');
       dot.className = 'testimonial-dot';
-      dot.setAttribute('aria-label', `Go to review ${i + 1}`);
-      dot.addEventListener('click', () => goToStripSlide(i, true));
       stripDots.appendChild(dot);
     });
 
-    const hasMultiple = stripReviews.length > 1;
-    stripPrev.hidden = !hasMultiple;
-    stripNext.hidden = !hasMultiple;
-    stripDots.hidden = !hasMultiple;
+    stripDots.hidden = stripReviews.length <= 1;
 
     updateStripActive();
     startStripTimer();
   }
 
-  stripPrev.addEventListener('click', () => goToStripSlide(stripIndex - 1, true));
-  stripNext.addEventListener('click', () => goToStripSlide(stripIndex + 1, true));
-
   stripEl.addEventListener('mouseenter', stopStripTimer);
   stripEl.addEventListener('mouseleave', () => {
     if (stripReviews.length > 1) startStripTimer();
   });
-  stripEl.addEventListener('focusin', stopStripTimer);
-  stripEl.addEventListener('focusout', (e) => {
-    if (!stripEl.contains(e.relatedTarget) && stripReviews.length > 1) startStripTimer();
-  });
 
   async function loadReviews() {
-    loadingEl.hidden = false;
-    gridEl.hidden = true;
-    emptyEl.hidden = true;
     try {
       const res = await fetch('/api/reviews');
       const data = await res.json();
       allReviews = Array.isArray(data.reviews) ? data.reviews : [];
-      renderSummary(data.summary);
-
-      if (allReviews.length === 0) {
-        emptyEl.hidden = false;
-        gridEl.hidden = true;
-      } else {
-        gridEl.hidden = false;
-        renderGrid();
-      }
       renderTestimonialStrip(allReviews);
     } catch (err) {
-      emptyEl.hidden = false;
-      gridEl.hidden = true;
       renderTestimonialStrip([]);
-    } finally {
-      loadingEl.hidden = true;
     }
   }
-
-  moreBtnEl.addEventListener('click', () => {
-    visibleCount += 6;
-    renderGrid();
-  });
 
   // ----- Modal open/close -----
   function getFocusableEls() {
