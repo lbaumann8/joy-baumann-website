@@ -43,14 +43,38 @@ siteNav.querySelectorAll('a').forEach((link) => {
   const allNavLinks = Array.from(siteNav.querySelectorAll('a'));
   if (allNavLinks.length === 0) return;
 
+  const navIndicator = document.getElementById('navIndicator');
+
+  function moveIndicatorTo(link) {
+    if (!navIndicator || !link) return;
+    const navRect = siteNav.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    navIndicator.style.left = `${linkRect.left - navRect.left}px`;
+    navIndicator.style.width = `${linkRect.width}px`;
+    navIndicator.classList.add('is-active');
+  }
+
   const isContactPage = window.location.pathname.replace(/\/index\.html$/, '/') === '/contact'
     || window.location.pathname.endsWith('/contact.html');
 
   function setActiveLink(href) {
+    let activeLink = null;
     allNavLinks.forEach((link) => {
-      link.classList.toggle('is-active', link.getAttribute('href') === href);
+      const isMatch = link.getAttribute('href') === href;
+      link.classList.toggle('is-active', isMatch);
+      if (isMatch) activeLink = link;
     });
+    if (activeLink) moveIndicatorTo(activeLink);
   }
+
+  let navResizeTimer;
+  window.addEventListener('resize', () => {
+    window.clearTimeout(navResizeTimer);
+    navResizeTimer = window.setTimeout(() => {
+      const current = allNavLinks.find((link) => link.classList.contains('is-active'));
+      if (current) moveIndicatorTo(current);
+    }, 200);
+  });
 
   if (isContactPage) {
     setActiveLink('/contact');
@@ -79,6 +103,74 @@ siteNav.querySelectorAll('a').forEach((link) => {
   );
 
   hashLinks.forEach((entry) => observer.observe(entry.section));
+})();
+
+// Scroll reveal: sections, cards, images fade/rise into place; the story
+// line draws in as its connector crosses the viewport.
+(function initScrollReveal() {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal, .reveal-card, .reveal-img').forEach((el) => el.classList.add('is-visible'));
+    document.querySelectorAll('.story-connector').forEach((el) => el.classList.add('is-drawn'));
+    return;
+  }
+
+  const revealTargets = document.querySelectorAll('.reveal, .reveal-card, .reveal-img');
+  if (revealTargets.length > 0) {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18, rootMargin: '0px 0px -8% 0px' }
+    );
+    revealTargets.forEach((el) => revealObserver.observe(el));
+  }
+
+  const connectorTargets = document.querySelectorAll('.story-connector');
+  if (connectorTargets.length > 0) {
+    const connectorObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-drawn');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    );
+    connectorTargets.forEach((el) => connectorObserver.observe(el));
+  }
+})();
+
+// Reviews motif: a few pixels of parallax drift, decorative only
+(function initMotifParallax() {
+  const motif = document.querySelector('.reviews-motif');
+  if (!motif) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  let ticking = false;
+
+  function update() {
+    const rect = motif.parentElement.getBoundingClientRect();
+    const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+    const offset = Math.max(-14, Math.min(14, center * -0.04));
+    motif.style.transform = `translate(-50%, calc(-50% + ${offset}px))`;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  update();
 })();
 
 // Contact form (placeholder submit handler — no backend wired up yet)
@@ -146,23 +238,20 @@ if (contactForm) {
     renderTestimonialStrip(allReviews);
   }
 
-  // ----- Featured review strip: slow, continuous, non-interactive carousel -----
+  // ----- Featured review wheel: slow, continuous, seamless horizontal marquee -----
   const stripEl = document.getElementById('testimonialStrip');
   const stripViewport = document.getElementById('testimonialViewport');
-  const stripDots = document.getElementById('testimonialDots');
 
-  const STRIP_INTERVAL_MS = 7000;
+  const MARQUEE_SPEED_PX_S = 42;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let stripReviews = [];
-  let stripIndex = 0;
-  let stripTimer = null;
 
-  function renderStripSlide(review, index, total) {
-    const slide = document.createElement('div');
-    slide.className = 'testimonial-slide';
-    slide.setAttribute('role', 'group');
-    slide.setAttribute('aria-roledescription', 'slide');
-    slide.setAttribute('aria-label', `Review ${index + 1} of ${total}`);
+  function renderTestimonialItem(review, isDuplicate) {
+    const item = document.createElement('div');
+    item.className = 'testimonial-item';
+    item.setAttribute('role', 'group');
+    item.setAttribute('aria-roledescription', 'review');
+    if (isDuplicate) item.setAttribute('aria-hidden', 'true');
 
     const stars = document.createElement('div');
     stars.className = 'testimonial-stars';
@@ -177,86 +266,80 @@ if (contactForm) {
     name.className = 'testimonial-name';
     name.textContent = `— ${review.name}`;
 
-    slide.appendChild(stars);
-    slide.appendChild(quote);
-    slide.appendChild(name);
-    return slide;
+    item.appendChild(stars);
+    item.appendChild(quote);
+    item.appendChild(name);
+    return item;
   }
 
-  function renderEmptyStripSlide() {
-    const slide = document.createElement('div');
-    slide.className = 'testimonial-slide';
-
-    const quote = document.createElement('blockquote');
-    quote.className = 'testimonial-quote';
-    quote.textContent = 'Be the first to share your experience.';
-
-    slide.appendChild(quote);
-    return slide;
+  function renderDivider() {
+    const divider = document.createElement('span');
+    divider.className = 'testimonial-divider';
+    divider.setAttribute('aria-hidden', 'true');
+    divider.textContent = '✦';
+    return divider;
   }
 
-  function updateStripActive() {
-    Array.from(stripViewport.children).forEach((slide, i) => {
-      slide.classList.toggle('is-active', i === stripIndex);
-    });
-    Array.from(stripDots.children).forEach((dot, i) => {
-      dot.classList.toggle('is-active', i === stripIndex);
+  function appendReviewSet(track, reviews, isDuplicate) {
+    reviews.forEach((review, i) => {
+      if (i > 0) track.appendChild(renderDivider());
+      track.appendChild(renderTestimonialItem(review, isDuplicate));
     });
   }
 
-  function stopStripTimer() {
-    if (stripTimer) {
-      window.clearInterval(stripTimer);
-      stripTimer = null;
-    }
+  function updateMarqueeSpeed() {
+    const track = stripViewport.querySelector('.testimonial-track');
+    if (!track) return;
+    const halfWidth = track.scrollWidth / 2;
+    const duration = Math.max(halfWidth / MARQUEE_SPEED_PX_S, 20);
+    track.style.setProperty('--marquee-duration', `${duration}s`);
   }
 
-  function startStripTimer() {
-    stopStripTimer();
-    if (prefersReducedMotion || stripReviews.length <= 1) return;
-    stripTimer = window.setInterval(() => goToStripSlide(stripIndex + 1), STRIP_INTERVAL_MS);
-  }
-
-  function goToStripSlide(index) {
-    if (stripReviews.length === 0) return;
-    stripIndex = (index + stripReviews.length) % stripReviews.length;
-    updateStripActive();
+  function debounce(fn, wait) {
+    let t;
+    return (...args) => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => fn(...args), wait);
+    };
   }
 
   function renderTestimonialStrip(reviews) {
     stripReviews = Array.isArray(reviews) ? reviews : [];
-    stopStripTimer();
     stripViewport.innerHTML = '';
-    stripDots.innerHTML = '';
-    stripIndex = 0;
+    stripEl.hidden = false;
+
+    const track = document.createElement('div');
+    track.className = 'testimonial-track';
+    stripViewport.appendChild(track);
 
     if (stripReviews.length === 0) {
-      stripEl.hidden = false;
-      stripViewport.appendChild(renderEmptyStripSlide());
-      updateStripActive();
+      stripEl.classList.add('is-empty');
+      const empty = document.createElement('p');
+      empty.className = 'testimonial-empty';
+      empty.textContent = 'Be the first to share your experience.';
+      track.appendChild(empty);
       return;
     }
 
-    stripEl.hidden = false;
+    stripEl.classList.remove('is-empty');
 
-    stripReviews.forEach((review, i) => {
-      stripViewport.appendChild(renderStripSlide(review, i, stripReviews.length));
+    if (prefersReducedMotion) {
+      stripEl.classList.add('is-static');
+      appendReviewSet(track, stripReviews, false);
+      return;
+    }
 
-      const dot = document.createElement('span');
-      dot.className = 'testimonial-dot';
-      stripDots.appendChild(dot);
-    });
+    stripEl.classList.remove('is-static');
+    appendReviewSet(track, stripReviews, false);
+    track.appendChild(renderDivider());
+    appendReviewSet(track, stripReviews, true);
 
-    stripDots.hidden = stripReviews.length <= 1;
-
-    updateStripActive();
-    startStripTimer();
+    window.requestAnimationFrame(() => window.requestAnimationFrame(updateMarqueeSpeed));
   }
 
-  stripEl.addEventListener('mouseenter', stopStripTimer);
-  stripEl.addEventListener('mouseleave', () => {
-    if (stripReviews.length > 1) startStripTimer();
-  });
+  window.addEventListener('resize', debounce(() => {
+    if (!prefersReducedMotion) updateMarqueeSpeed();
+  }, 200));
 
   async function loadReviews() {
     try {
