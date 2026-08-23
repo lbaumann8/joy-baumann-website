@@ -3,20 +3,7 @@ import { createHash } from 'node:crypto';
 
 const NAME_MIN = 2;
 const NAME_MAX = 80;
-const REVIEW_MIN = 20;
 const REVIEW_MAX = 1500;
-const CATEGORY_MAX = 100;
-const EMAIL_MAX = 254;
-
-const CATEGORIES = new Set([
-  'Grief Work',
-  'Spiritual Healing',
-  'Trauma Resolution',
-  'Spiritual Integration',
-  'Other',
-]);
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const RATE_LIMIT_WINDOW_HOURS = 24;
 const RATE_LIMIT_MAX_PER_WINDOW = 3;
@@ -56,35 +43,28 @@ function validate(body) {
     errors.name = `Name must be between ${NAME_MIN} and ${NAME_MAX} characters.`;
   }
 
-  const email = clean(body.email).toLowerCase();
-  if (!email || email.length > EMAIL_MAX || !EMAIL_RE.test(email)) {
-    errors.email = 'Please enter a valid email address.';
-  }
-
   const rating = Number(body.rating);
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
     errors.rating = 'Please select a rating between 1 and 5.';
   }
 
   const reviewText = clean(body.review_text);
-  if (reviewText.length < REVIEW_MIN || reviewText.length > REVIEW_MAX) {
-    errors.review_text = `Review must be between ${REVIEW_MIN} and ${REVIEW_MAX} characters.`;
+  if (reviewText.length === 0) {
+    errors.review_text = 'Please write a review before submitting.';
+  } else if (reviewText.length > REVIEW_MAX) {
+    errors.review_text = `Review must be ${REVIEW_MAX} characters or fewer.`;
   }
-
-  let category = clean(body.category);
-  if (category.length > CATEGORY_MAX) category = category.slice(0, CATEGORY_MAX);
-  // Free-text categories are allowed too (not restricted to CATEGORIES), just length-capped.
 
   return {
     errors,
-    value: { name, email, rating, reviewText, category: category || null },
+    value: { name, rating, reviewText },
   };
 }
 
 async function handleGet(req, res) {
   const sql = getSql();
   const rows = await sql`
-    SELECT id, name, rating, review_text, category, created_at
+    SELECT id, name, rating, review_text, created_at
     FROM reviews
     WHERE status = 'approved'
     ORDER BY created_at DESC
@@ -106,7 +86,6 @@ async function handleGet(req, res) {
       name: r.name,
       rating: r.rating,
       review_text: r.review_text,
-      category: r.category,
       created_at: r.created_at,
     })),
     summary: { average, count, breakdown },
@@ -154,8 +133,8 @@ async function handlePost(req, res) {
   }
 
   await sql`
-    INSERT INTO reviews (name, email, rating, review_text, category, status, ip_hash)
-    VALUES (${value.name}, ${value.email}, ${value.rating}, ${value.reviewText}, ${value.category}, 'pending', ${ipHash})
+    INSERT INTO reviews (name, rating, review_text, status, ip_hash)
+    VALUES (${value.name}, ${value.rating}, ${value.reviewText}, 'pending', ${ipHash})
   `;
 
   res.status(201).json({ ok: true });

@@ -72,8 +72,6 @@
       </div>
 
       <div class="card-feature">
-        <div class="card-mandala card-mandala-left" aria-hidden="true"></div>
-        <div class="card-mandala card-mandala-right" aria-hidden="true"></div>
         <img src="card.png" alt="A keepsake card reading: The gift of freedom is often hindered by limiting beliefs, old patterns and unhealed wounds. I will teach you how to use your brain to get what your heart wants in this life. Guiding you to approaching life through your highest self. Grief Work. Spiritual Healing. Trauma Resolution. Spiritual Integration Oneness." class="card-feature-img">
       </div>
     </div>
@@ -84,6 +82,8 @@
     <div class="section-inner">
       <p class="kicker">Chapter Two</p>
       <h2 class="section-title">Anthology of Unusual Presentations</h2>
+      <p class="chapter-two-note">Explore more of Joy&rsquo;s creative work in the Anthology of Unusual Presentations.</p>
+      <a href="https://anthologyofunusualpresentations.com" class="chapter-two-link" target="_blank" rel="noopener noreferrer">Visit the Anthology of Unusual Presentations &rarr;</a>
     </div>
   </section>
 
@@ -124,17 +124,34 @@
       </div>
 
       <div class="section-cta">
-        <a href="#" class="btn btn-outline">Explore His Body of Work</a>
+        <a href="https://anthologyofunusualpresentations.com" class="btn btn-outline" target="_blank" rel="noopener noreferrer">Explore His Body of Work</a>
       </div>
     </div>
+  </section>
+
+  <!-- FEATURED REVIEW STRIP -->
+  <section class="testimonial-strip" id="testimonialStrip" aria-label="Featured client reviews" hidden>
+    <div class="testimonial-strip-motif" aria-hidden="true"></div>
+    <div class="testimonial-strip-inner">
+      <button type="button" class="testimonial-nav testimonial-nav-prev" id="testimonialPrev" aria-label="Previous review" hidden>
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1 L2 8 L9 15"/></svg>
+      </button>
+
+      <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
+
+      <button type="button" class="testimonial-nav testimonial-nav-next" id="testimonialNext" aria-label="Next review" hidden>
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1 L8 8 L1 15"/></svg>
+      </button>
+    </div>
+
+    <div class="testimonial-dots" id="testimonialDots" hidden></div>
   </section>
 
   <!-- KIND WORDS / REVIEWS -->
   <section class="section" id="reviews">
     <div class="reviews-motif" aria-hidden="true"></div>
     <div class="section-inner">
-      <p class="kicker">Kind Words</p>
-      <h2 class="section-title">Kind Words</h2>
+      <h2 class="section-title section-title-lead">Kind Words</h2>
       <p class="section-intro">Experiences shared by those who have worked with Joy.</p>
 
       <div class="reviews-summary" id="reviewsSummary" hidden>
@@ -215,13 +232,6 @@
         </div>
 
         <div class="field">
-          <label for="reviewEmail">Your Email</label>
-          <input type="email" id="reviewEmail" name="email" required maxlength="254" autocomplete="email" aria-describedby="reviewEmailHint reviewEmailError">
-          <p class="field-hint" id="reviewEmailHint">Your email will not be displayed publicly.</p>
-          <p class="field-error" id="reviewEmailError" role="alert"></p>
-        </div>
-
-        <div class="field">
           <span class="field-label-static" id="reviewRatingLabel">Rating</span>
           <div class="star-rating" role="radiogroup" aria-labelledby="reviewRatingLabel" id="starRating">
             <button type="button" class="star-btn" role="radio" aria-checked="false" aria-label="1 star" data-value="1">★</button>
@@ -235,20 +245,8 @@
         </div>
 
         <div class="field">
-          <label for="reviewCategory">What did you work with Joy on? <span class="field-optional">(Optional)</span></label>
-          <select id="reviewCategory" name="category">
-            <option value="">Prefer not to say</option>
-            <option value="Grief Work">Grief Work</option>
-            <option value="Spiritual Healing">Spiritual Healing</option>
-            <option value="Trauma Resolution">Trauma Resolution</option>
-            <option value="Spiritual Integration">Spiritual Integration</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div class="field">
           <label for="reviewText">Your Review</label>
-          <textarea id="reviewText" name="review_text" rows="5" required minlength="20" maxlength="1500" placeholder="Tell us about your experience…" aria-describedby="reviewCharCount reviewTextError"></textarea>
+          <textarea id="reviewText" name="review_text" rows="5" required maxlength="1500" placeholder="Tell us about your experience…" aria-describedby="reviewCharCount reviewTextError"></textarea>
           <p class="field-char-count" id="reviewCharCount">0 / 1500</p>
           <p class="field-error" id="reviewTextError" role="alert"></p>
         </div>
@@ -262,7 +260,7 @@
 
         <button type="submit" class="btn btn-primary" id="reviewSubmitBtn">Submit Review</button>
 
-        <p class="form-note">Your email will never be displayed publicly. Reviews are reviewed before appearing on the website.</p>
+        <p class="form-note">Reviews are reviewed before appearing on the website.</p>
       </form>
     </div>
 

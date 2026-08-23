@@ -54,9 +54,7 @@ contactForm.addEventListener('submit', (e) => {
   const successCloseBtn = document.getElementById('reviewSuccessCloseBtn');
   const form = document.getElementById('reviewForm');
   const nameInput = document.getElementById('reviewName');
-  const emailInput = document.getElementById('reviewEmail');
   const textInput = document.getElementById('reviewText');
-  const categorySelect = document.getElementById('reviewCategory');
   const ratingHidden = document.getElementById('reviewRating');
   const starRating = document.getElementById('starRating');
   const starBtns = Array.from(starRating.querySelectorAll('.star-btn'));
@@ -66,13 +64,11 @@ contactForm.addEventListener('submit', (e) => {
 
   const fieldErrorEls = {
     name: document.getElementById('reviewNameError'),
-    email: document.getElementById('reviewEmailError'),
     rating: document.getElementById('reviewRatingError'),
     review_text: document.getElementById('reviewTextError'),
   };
   const fieldInputEls = {
     name: nameInput,
-    email: emailInput,
     review_text: textInput,
   };
 
@@ -144,14 +140,11 @@ contactForm.addEventListener('submit', (e) => {
 
     const details = document.createElement('span');
     details.className = 'review-card-details';
-    const parts = [];
-    if (review.category) parts.push(review.category);
     const date = formatDate(review.created_at);
-    if (date) parts.push(date);
-    details.textContent = parts.join(' · ');
+    details.textContent = date;
 
     meta.appendChild(name);
-    if (parts.length) meta.appendChild(details);
+    if (date) meta.appendChild(details);
 
     card.appendChild(stars);
     card.appendChild(text);
@@ -165,6 +158,121 @@ contactForm.addEventListener('submit', (e) => {
     toShow.forEach((review) => gridEl.appendChild(renderCard(review)));
     moreWrapEl.hidden = visibleCount >= allReviews.length;
   }
+
+  // ----- Featured review strip -----
+  const stripEl = document.getElementById('testimonialStrip');
+  const stripViewport = document.getElementById('testimonialViewport');
+  const stripPrev = document.getElementById('testimonialPrev');
+  const stripNext = document.getElementById('testimonialNext');
+  const stripDots = document.getElementById('testimonialDots');
+
+  const STRIP_INTERVAL_MS = 6000;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let stripReviews = [];
+  let stripIndex = 0;
+  let stripTimer = null;
+
+  function renderStripSlide(review, index, total) {
+    const slide = document.createElement('div');
+    slide.className = 'testimonial-slide';
+    slide.setAttribute('role', 'group');
+    slide.setAttribute('aria-roledescription', 'slide');
+    slide.setAttribute('aria-label', `Review ${index + 1} of ${total}`);
+
+    const stars = document.createElement('div');
+    stars.className = 'testimonial-stars';
+    stars.setAttribute('aria-hidden', 'true');
+    stars.innerHTML = starGlyphs(review.rating);
+
+    const quote = document.createElement('blockquote');
+    quote.className = 'testimonial-quote';
+    quote.textContent = `“${review.review_text}”`;
+
+    const name = document.createElement('cite');
+    name.className = 'testimonial-name';
+    name.textContent = `— ${review.name}`;
+
+    slide.appendChild(stars);
+    slide.appendChild(quote);
+    slide.appendChild(name);
+    return slide;
+  }
+
+  function updateStripActive() {
+    Array.from(stripViewport.children).forEach((slide, i) => {
+      slide.classList.toggle('is-active', i === stripIndex);
+    });
+    Array.from(stripDots.children).forEach((dot, i) => {
+      dot.classList.toggle('is-active', i === stripIndex);
+      dot.setAttribute('aria-current', i === stripIndex ? 'true' : 'false');
+    });
+  }
+
+  function stopStripTimer() {
+    if (stripTimer) {
+      window.clearInterval(stripTimer);
+      stripTimer = null;
+    }
+  }
+
+  function startStripTimer() {
+    stopStripTimer();
+    if (prefersReducedMotion || stripReviews.length <= 1) return;
+    stripTimer = window.setInterval(() => goToStripSlide(stripIndex + 1), STRIP_INTERVAL_MS);
+  }
+
+  function goToStripSlide(index, isManual) {
+    if (stripReviews.length === 0) return;
+    stripIndex = (index + stripReviews.length) % stripReviews.length;
+    updateStripActive();
+    if (isManual) startStripTimer();
+  }
+
+  function renderTestimonialStrip(reviews) {
+    stripReviews = Array.isArray(reviews) ? reviews : [];
+    stopStripTimer();
+    stripViewport.innerHTML = '';
+    stripDots.innerHTML = '';
+
+    if (stripReviews.length === 0) {
+      stripEl.hidden = true;
+      return;
+    }
+
+    stripEl.hidden = false;
+    stripIndex = 0;
+
+    stripReviews.forEach((review, i) => {
+      stripViewport.appendChild(renderStripSlide(review, i, stripReviews.length));
+
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'testimonial-dot';
+      dot.setAttribute('aria-label', `Go to review ${i + 1}`);
+      dot.addEventListener('click', () => goToStripSlide(i, true));
+      stripDots.appendChild(dot);
+    });
+
+    const hasMultiple = stripReviews.length > 1;
+    stripPrev.hidden = !hasMultiple;
+    stripNext.hidden = !hasMultiple;
+    stripDots.hidden = !hasMultiple;
+
+    updateStripActive();
+    startStripTimer();
+  }
+
+  stripPrev.addEventListener('click', () => goToStripSlide(stripIndex - 1, true));
+  stripNext.addEventListener('click', () => goToStripSlide(stripIndex + 1, true));
+
+  stripEl.addEventListener('mouseenter', stopStripTimer);
+  stripEl.addEventListener('mouseleave', () => {
+    if (stripReviews.length > 1) startStripTimer();
+  });
+  stripEl.addEventListener('focusin', stopStripTimer);
+  stripEl.addEventListener('focusout', (e) => {
+    if (!stripEl.contains(e.relatedTarget) && stripReviews.length > 1) startStripTimer();
+  });
 
   async function loadReviews() {
     loadingEl.hidden = false;
@@ -183,9 +291,11 @@ contactForm.addEventListener('submit', (e) => {
         gridEl.hidden = false;
         renderGrid();
       }
+      renderTestimonialStrip(allReviews);
     } catch (err) {
       emptyEl.hidden = false;
       gridEl.hidden = true;
+      renderTestimonialStrip([]);
     } finally {
       loadingEl.hidden = true;
     }
@@ -310,7 +420,6 @@ contactForm.addEventListener('submit', (e) => {
     clearFieldError('review_text');
   });
   nameInput.addEventListener('input', () => clearFieldError('name'));
-  emailInput.addEventListener('input', () => clearFieldError('email'));
 
   function clearFieldError(field) {
     if (fieldErrorEls[field]) fieldErrorEls[field].textContent = '';
@@ -335,16 +444,14 @@ contactForm.addEventListener('submit', (e) => {
     if (name.length < 2 || name.length > 80) {
       errors.name = 'Name must be between 2 and 80 characters.';
     }
-    const email = emailInput.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.email = 'Please enter a valid email address.';
-    }
     if (currentRating < 1 || currentRating > 5) {
       errors.rating = 'Please select a rating between 1 and 5.';
     }
     const text = textInput.value.trim();
-    if (text.length < 20 || text.length > REVIEW_TEXT_MAX) {
-      errors.review_text = 'Review must be between 20 and 1500 characters.';
+    if (text.length === 0) {
+      errors.review_text = 'Please write a review before submitting.';
+    } else if (text.length > REVIEW_TEXT_MAX) {
+      errors.review_text = `Review must be ${REVIEW_TEXT_MAX} characters or fewer.`;
     }
     return errors;
   }
@@ -376,10 +483,8 @@ contactForm.addEventListener('submit', (e) => {
     try {
       const payload = {
         name: nameInput.value.trim(),
-        email: emailInput.value.trim(),
         rating: currentRating,
         review_text: textInput.value.trim(),
-        category: categorySelect.value,
         website: document.getElementById('reviewWebsite').value,
       };
       const res = await fetch('/api/reviews', {
