@@ -3,6 +3,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
 const siteNav = document.getElementById('siteNav');
+const siteHeader = document.querySelector('.site-header');
 
 navToggle.addEventListener('click', () => {
   const isOpen = siteNav.classList.toggle('open');
@@ -15,6 +16,59 @@ siteNav.querySelectorAll('a').forEach((link) => {
     navToggle.setAttribute('aria-expanded', 'false');
   });
 });
+
+// Sticky nav: shrink slightly once the page has scrolled
+(function initHeaderScroll() {
+  if (!siteHeader) return;
+  const SCROLL_THRESHOLD = 24;
+  let ticking = false;
+
+  function updateHeaderState() {
+    siteHeader.classList.toggle('is-scrolled', window.scrollY > SCROLL_THRESHOLD);
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeaderState);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  updateHeaderState();
+})();
+
+// Scroll-spy: highlight the nav link for the section currently in view
+(function initScrollSpy() {
+  const navLinks = Array.from(siteNav.querySelectorAll('a[href^="#"]'));
+  if (navLinks.length === 0 || !('IntersectionObserver' in window)) return;
+
+  const sections = navLinks
+    .map((link) => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean);
+
+  if (sections.length === 0) return;
+
+  function setActiveLink(id) {
+    navLinks.forEach((link) => {
+      link.classList.toggle('is-active', link.getAttribute('href') === `#${id}`);
+    });
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible.length > 0) {
+        setActiveLink(visible[0].target.id);
+      }
+    },
+    { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+  );
+
+  sections.forEach((section) => observer.observe(section));
+})();
 
 // Contact form (placeholder submit handler — no backend wired up yet)
 const contactForm = document.getElementById('contactForm');
@@ -360,11 +414,13 @@ contactForm.addEventListener('submit', (e) => {
   function showFormView() {
     formView.hidden = false;
     successView.hidden = true;
+    modal.classList.remove('is-success');
   }
 
   function showSuccessView() {
     formView.hidden = true;
     successView.hidden = false;
+    modal.classList.add('is-success');
     successCloseBtn.focus();
   }
 
