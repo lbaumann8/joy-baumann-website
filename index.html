@@ -12,19 +12,6 @@
 </head>
 <body>
 
-<!-- FLOATING MENU -->
-<div class="menu-fab-wrap" id="menuFabWrap">
-  <button type="button" class="menu-fab" id="menuFab" aria-haspopup="true" aria-expanded="false" aria-controls="menuPanel">
-    <span class="menu-fab-label" id="menuFabLabel">Menu</span>
-  </button>
-  <nav class="menu-panel" id="menuPanel" aria-label="Primary">
-    <a href="/#her-story">Her Story</a>
-    <a href="/#chapter-two">Chapters</a>
-    <a href="/#reviews" class="js-reviews-link">Reviews</a>
-    <a href="/contact">Contact</a>
-  </nav>
-</div>
-
 <main>
 
   <!-- HERO -->
@@ -50,10 +37,12 @@
   <section class="section" id="her-story">
     <div class="section-inner">
       <p class="kicker reveal">Her Story</p>
-      <span class="kicker-node reveal" style="transition-delay: 60ms;" aria-hidden="true"></span>
-      <p class="section-intro reveal" style="transition-delay: 120ms;">
+      <h2 class="section-title reveal" style="transition-delay: 90ms;">Her Story</h2>
+      <span class="kicker-node reveal" style="transition-delay: 150ms;" aria-hidden="true"></span>
+      <p class="section-intro reveal" style="transition-delay: 210ms;">
         Her life and work reflect a deeply personal journey shaped by creativity, courage, struggle, discovery, and healing. This space is dedicated to sharing her story, preserving her voice, and exploring the experiences that made her life so extraordinary.
       </p>
+      <span class="story-divider reveal" style="transition-delay: 260ms;" aria-hidden="true"></span>
 
       <div class="story-grid">
         <div class="portrait-frame reveal-img">
@@ -61,24 +50,15 @@
             <span>Portrait Photograph</span>
           </div>
         </div>
-        <div class="story-text">
-          <div class="story-topic reveal" style="transition-delay: 140ms;">
-            <span class="story-topic-num">01</span>
-            <h3 class="sub-title">Biography</h3>
-            <p class="placeholder-copy">Space reserved for a longer biography — the arc of her life, the places she called home, and the people who shaped her.</p>
-          </div>
+        <div class="story-text reveal" style="transition-delay: 140ms;">
+          <h3 class="sub-title">Biography</h3>
+          <p class="placeholder-copy">Space reserved for a longer biography — the arc of her life, the places she called home, and the people who shaped her.</p>
 
-          <div class="story-topic reveal" style="transition-delay: 220ms;">
-            <span class="story-topic-num">02</span>
-            <h3 class="sub-title">Moments &amp; Milestones</h3>
-            <p class="placeholder-copy">Space reserved for the important moments from her life — turning points, discoveries, and the experiences that defined her path.</p>
-          </div>
+          <h3 class="sub-title">Moments &amp; Milestones</h3>
+          <p class="placeholder-copy">Space reserved for the important moments from her life — turning points, discoveries, and the experiences that defined her path.</p>
 
-          <div class="story-topic story-topic--accent reveal" style="transition-delay: 300ms;">
-            <span class="story-topic-num story-topic-num--blue">03</span>
-            <h3 class="sub-title">Her Philosophy</h3>
-            <p class="placeholder-copy">Space reserved for her personal philosophy and approach to healing — the beliefs and practices that guided her.</p>
-          </div>
+          <h3 class="sub-title">Her Philosophy</h3>
+          <p class="placeholder-copy">Space reserved for her personal philosophy and approach to healing — the beliefs and practices that guided her.</p>
         </div>
       </div>
 
@@ -94,16 +74,18 @@
     </div>
   </section>
 
-  <!-- KIND WORDS: embedded directly beneath the healing card, shown only when reviews exist -->
-  <section class="reviews-band" id="reviews" hidden>
-    <div class="reviews-band-motif" aria-hidden="true"></div>
-    <div class="reviews-band-head reveal">
-      <p class="kicker">Kind Words</p>
-      <button type="button" class="btn-quiet" id="leaveReviewBtn">Leave a Review</button>
+  <!-- KIND WORDS: static invitation, always shown so the first review can be left -->
+  <section class="kind-words" id="reviews">
+    <div class="kind-words-inner">
+      <h2 class="section-title reveal">Kind Words</h2>
+      <p class="kind-words-line reveal" style="transition-delay: 90ms;">Experiences shared by those who have worked with Joy.</p>
+      <button type="button" class="btn btn-outline reveal" id="leaveReviewBtn" style="transition-delay: 160ms;">Leave a Review</button>
     </div>
-    <div class="testimonial-strip" id="testimonialStrip">
-      <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
-    </div>
+  </section>
+
+  <!-- MOVING REVIEW WHEEL: its own section, hidden entirely until a review exists -->
+  <section class="testimonial-strip" id="testimonialStrip" aria-label="Featured client reviews" hidden>
+    <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
   </section>
 
   <div class="story-connector story-connector--circle" aria-hidden="true" style="--conn-from: var(--warm-white); --conn-to: var(--cream);">
@@ -193,7 +175,7 @@
     <nav class="footer-links" aria-label="Footer">
       <a href="/#her-story">Her Story</a>
       <a href="/#chapter-two">Chapters</a>
-      <a href="/#reviews" class="js-reviews-link">Reviews</a>
+      <a href="/#reviews">Reviews</a>
       <a href="/contact">Contact</a>
     </nav>
     <p class="footer-copy">&copy; <span id="year"></span> Joy Baumann. All rights reserved.</p>
