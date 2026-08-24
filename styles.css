@@ -174,6 +174,48 @@ img { max-width: 100%; display: block; }
   }
 }
 
+/* ---------- Minimal floating nav ---------- */
+.site-nav-link {
+  position: fixed;
+  top: 40px;
+  z-index: 50;
+  font-family: var(--sans);
+  font-size: 0.76rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  transition: color 0.3s ease;
+}
+
+.site-nav-link--left {
+  left: 44px;
+}
+
+.site-nav-link--right {
+  right: 44px;
+}
+
+.site-nav-link:hover {
+  color: var(--blue-slate);
+}
+
+.site-nav-link:focus-visible {
+  outline: 2px solid var(--blue-slate);
+  outline-offset: 4px;
+  color: var(--blue-slate);
+}
+
+@media (max-width: 640px) {
+  .site-nav-link {
+    top: 20px;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  .site-nav-link--left { left: 20px; }
+  .site-nav-link--right { right: 20px; }
+}
+
 /* ---------- Hero ---------- */
 .hero {
   min-height: 90vh;
@@ -182,7 +224,7 @@ img { max-width: 100%; display: block; }
   justify-content: center;
   text-align: center;
   padding: 0 24px 80px;
-  margin-bottom: 24px;
+  margin-bottom: 0;
   position: relative;
   top: 0;
   overflow: hidden;
@@ -379,7 +421,7 @@ img { max-width: 100%; display: block; }
 /* ---------- Her Story section ---------- */
 .section#her-story {
   position: relative;
-  padding-top: 38px;
+  padding-top: 30px;
   padding-bottom: 0;
 }
 
@@ -421,20 +463,29 @@ img { max-width: 100%; display: block; }
   padding-top: 34px;
 }
 
-/* faint blue-gray tint behind the final topic heading */
-.story-text h3.sub-title:last-of-type {
+/* consistent small blue accent ahead of each topic heading */
+.story-text .sub-title {
   position: relative;
-  display: inline-block;
-  padding: 2px 5px;
+  padding-left: 20px;
+  margin-top: 44px;
 }
 
-.story-text h3.sub-title:last-of-type::before {
+.story-text .sub-title:first-child {
+  margin-top: 0;
+}
+
+.story-text .sub-title::before {
   content: "";
   position: absolute;
-  inset: -1px -6px;
-  background: var(--blue-pale);
-  border-radius: 3px;
-  z-index: -1;
+  left: 0;
+  top: 0.62em;
+  width: 9px;
+  height: 1px;
+  background: var(--blue-slate);
+}
+
+.story-text .placeholder-copy {
+  line-height: 1.75;
 }
 
 /* subtle pale-blue divider between the intro and the story grid */
@@ -1228,7 +1279,7 @@ img { max-width: 100%; display: block; }
 
   .hero {
     padding: 0 20px 70px;
-    margin-bottom: 8px;
+    margin-bottom: 0;
   }
 
   .hero-panel {
