@@ -240,6 +240,7 @@ img { max-width: 100%; display: block; }
 
 .hero-panel {
   --panel-rest-y: 60px;
+  position: relative;
   background: linear-gradient(165deg, var(--cream), var(--cream-alt) 130%);
   padding: 68px 64px;
   border-radius: 4px;
@@ -261,6 +262,67 @@ img { max-width: 100%; display: block; }
 .hero-panel.is-visible:hover {
   transform: translateY(calc(var(--panel-rest-y) - 3px)) scale(1);
   box-shadow: 0 28px 68px -30px rgba(43, 39, 35, 0.24);
+}
+
+/* Subtle editorial crop-mark accents at the hero card's four corners —
+   sit on top of the existing ivory card and neutral border, not a border
+   of their own, so the card stays calm and never reads as boxed-in. */
+.hero-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease 0.3s;
+}
+
+.hero-panel.is-visible .hero-corner {
+  opacity: 0.55;
+}
+
+.hero-panel.is-visible:hover .hero-corner {
+  opacity: 0.85;
+}
+
+.hero-corner--tl {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--blue-slate);
+  border-left: 1px solid var(--blue-slate);
+}
+
+.hero-corner--tr {
+  top: -1px;
+  right: -1px;
+  border-top: 1px solid var(--blue-slate);
+  border-right: 1px solid var(--blue-slate);
+}
+
+.hero-corner--bl {
+  bottom: -1px;
+  left: -1px;
+  border-bottom: 1px solid var(--blue-slate);
+  border-left: 1px solid var(--blue-slate);
+}
+
+.hero-corner--br {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid var(--blue-slate);
+  border-right: 1px solid var(--blue-slate);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-corner {
+    transition: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero-corner {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -443,13 +505,32 @@ img { max-width: 100%; display: block; }
 /* ---------- Her Story section ---------- */
 .section#her-story {
   position: relative;
-  padding-top: 30px;
+  padding-top: 0;
   padding-bottom: 0;
 }
 
 .section#her-story .section-inner {
   position: relative;
   z-index: 1;
+}
+
+/* Opaque editorial window: the story spine is one continuous element that
+   runs the full height of .story-spine-wrap, but it must never cross
+   readable text. This block sits directly above the spine and fully
+   occludes it — not just behind glyphs, but across the whole band — so the
+   line reads as an intentional break rather than a rendering glitch. It
+   picks back up immediately after, on the same center axis. */
+.story-window {
+  position: relative;
+  z-index: 2;
+  background: var(--warm-white);
+  padding: 76px 24px 64px;
+}
+
+@media (max-width: 720px) {
+  .story-window {
+    padding: 56px 20px 48px;
+  }
 }
 
 /* ---------- Story grid ---------- */

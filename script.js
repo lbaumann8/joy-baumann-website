@@ -112,6 +112,7 @@ if (contactForm) {
   const stripViewport = document.getElementById('testimonialViewport');
 
   const MARQUEE_SPEED_PX_S = 42;
+  const MARQUEE_MIN_REVIEWS = 3;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let stripReviews = [];
 
@@ -184,7 +185,10 @@ if (contactForm) {
 
   // No reviews yet: keep the moving wheel out of the DOM flow entirely —
   // only the static Kind Words / Leave a Review invitation shows. The wheel
-  // reappears the moment a review exists.
+  // reappears the moment a review exists. A single review (or too few to
+  // loop meaningfully) renders as one clean centered card instead of an
+  // infinite marquee — the rotating behavior only earns its keep once
+  // there's a real set of reviews to cycle through.
   function renderTestimonialStrip(reviews) {
     stripReviews = Array.isArray(reviews) ? reviews : [];
     stripViewport.innerHTML = '';
@@ -200,7 +204,9 @@ if (contactForm) {
     track.className = 'testimonial-track';
     stripViewport.appendChild(track);
 
-    if (prefersReducedMotion) {
+    const useMarquee = !prefersReducedMotion && stripReviews.length >= MARQUEE_MIN_REVIEWS;
+
+    if (!useMarquee) {
       stripEl.classList.add('is-static');
       appendReviewSet(track, stripReviews, false);
       return;
