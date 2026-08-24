@@ -12,8 +12,8 @@
   --accent-blue-soft: #9aabce;
   --clay: #af5b3c;
   --clay-dark: #8f4830;
-  --story-line: rgba(169, 118, 79, 0.35);
-  --story-marker: rgba(175, 91, 60, 0.85);
+  --story-line: rgba(76, 96, 136, 0.28);
+  --story-marker: #4c6088;
 
   /* Blue accent system, drawn from the healing card's ink navy */
   --ink-blue: #23324f;
@@ -31,7 +31,11 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+}
 
 section[id], .chapter-intro[id] {
   scroll-margin-top: 32px;
@@ -39,6 +43,8 @@ section[id], .chapter-intro[id] {
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100vw;
   font-family: var(--sans);
   color: var(--ink);
   background: var(--warm-white);
@@ -86,47 +92,17 @@ img { max-width: 100%; display: block; }
 
 .story-connector-marker {
   flex: 0 0 auto;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--story-marker);
-  border-radius: 50%;
+  border-radius: 1px;
+  transform: rotate(45deg);
   opacity: 0;
   transition: opacity 0.5s ease 0.35s;
 }
 
 .story-connector.is-drawn .story-connector-marker {
   opacity: 1;
-}
-
-.story-connector--diamond .story-connector-marker {
-  width: 7px;
-  height: 7px;
-  border-radius: 1px;
-  transform: rotate(45deg);
-}
-
-.story-connector--dot .story-connector-marker {
-  width: 4px;
-  height: 4px;
-}
-
-.story-connector--blue .story-connector-marker {
-  background: var(--blue-slate);
-}
-
-.story-connector-marker--blue {
-  background: var(--blue-slate) !important;
-}
-
-/* Occasional larger marker at the site's major storytelling beats */
-.story-connector--major .story-connector-marker {
-  width: 9px;
-  height: 9px;
-}
-
-.story-connector--major.story-connector--diamond .story-connector-marker {
-  width: 10px;
-  height: 10px;
 }
 
 @media (max-width: 720px) {
@@ -180,7 +156,7 @@ img { max-width: 100%; display: block; }
     transition: none !important;
   }
 
-  .story-connector--diamond .story-connector-marker {
+  .story-connector-marker {
     transform: rotate(45deg) !important;
   }
 }
@@ -416,15 +392,6 @@ img { max-width: 100%; display: block; }
   margin-bottom: 14px;
 }
 
-.kicker-node {
-  display: block;
-  width: 5px;
-  height: 5px;
-  margin: 0 auto 40px;
-  border-radius: 50%;
-  background: var(--blue-slate);
-}
-
 .section-title {
   font-size: clamp(2rem, 4vw, 2.8rem);
   text-align: center;
@@ -501,19 +468,6 @@ img { max-width: 100%; display: block; }
   background: var(--warm-white);
 }
 
-/* tiny blue accent near the portrait */
-.portrait-frame::after {
-  content: "";
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--blue-slate);
-  box-shadow: 0 0 0 4px var(--warm-white);
-}
-
 .story-text {
   padding-top: 34px;
 }
@@ -550,6 +504,10 @@ img { max-width: 100%; display: block; }
   height: 1px;
   margin: 0 auto 40px;
   background: var(--blue-line);
+}
+
+.section#her-story .section-title {
+  margin-bottom: 68px;
 }
 
 .section#her-story .section-intro {
@@ -787,7 +745,10 @@ img { max-width: 100%; display: block; }
 .testimonial-strip {
   position: relative;
   z-index: 1;
-  overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: visible;
   background: linear-gradient(180deg, var(--blue-pale) 0%, var(--cream-alt) 100%);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -799,8 +760,9 @@ img { max-width: 100%; display: block; }
 }
 
 .testimonial-strip-viewport {
-  overflow: hidden;
+  overflow-x: hidden;
   width: 100%;
+  max-width: 100%;
 }
 
 .testimonial-track {

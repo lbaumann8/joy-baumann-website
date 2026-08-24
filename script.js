@@ -156,6 +156,16 @@ if (contactForm) {
     });
   }
 
+  // Trailing divider after every item (including the last) so two copies of
+  // this unit placed back-to-back are pixel-identical halves — the marquee
+  // can then loop by exactly 50% with no seam or jump.
+  function appendReviewUnit(track, reviews, isDuplicate) {
+    reviews.forEach((review) => {
+      track.appendChild(renderTestimonialItem(review, isDuplicate));
+      track.appendChild(renderDivider());
+    });
+  }
+
   function updateMarqueeSpeed() {
     const track = stripViewport.querySelector('.testimonial-track');
     if (!track) return;
@@ -197,9 +207,8 @@ if (contactForm) {
     }
 
     stripEl.classList.remove('is-static');
-    appendReviewSet(track, stripReviews, false);
-    track.appendChild(renderDivider());
-    appendReviewSet(track, stripReviews, true);
+    appendReviewUnit(track, stripReviews, false);
+    appendReviewUnit(track, stripReviews, true);
 
     window.requestAnimationFrame(() => window.requestAnimationFrame(updateMarqueeSpeed));
   }
