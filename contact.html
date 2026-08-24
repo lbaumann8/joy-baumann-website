@@ -12,19 +12,24 @@
 </head>
 <body>
 
+<a href="/" class="site-nav-link site-nav-link--left">&larr; Back to Joy&rsquo;s Story</a>
+
 <main>
 
   <!-- CONTACT -->
   <section class="section section-alt contact-page" id="contact">
     <div class="section-inner narrow">
-      <a href="/" class="back-home reveal">&larr; Back to Joy&rsquo;s Story</a>
-      <p class="kicker reveal">Contact</p>
-      <h1 class="section-title reveal" style="transition-delay: 90ms;">Contact</h1>
-      <p class="section-intro reveal" style="transition-delay: 180ms;">
+      <div class="story-connector story-connector--diamond story-connector--blue story-connector--major" aria-hidden="true" style="--conn-from: var(--cream); --conn-to: var(--cream);">
+        <span class="story-connector-line"></span>
+        <span class="story-connector-marker"></span>
+        <span class="story-connector-line"></span>
+      </div>
+      <h1 class="section-title reveal">Contact</h1>
+      <p class="section-intro reveal" style="transition-delay: 90ms;">
         Have a question, memory, photograph, document, or story you would like to share? Please use the form below to get in touch.
       </p>
 
-      <form class="contact-form reveal" id="contactForm" style="transition-delay: 260ms;">
+      <form class="contact-form reveal" id="contactForm" style="transition-delay: 180ms;">
         <div class="field">
           <label for="name">Name</label>
           <input type="text" id="name" name="name" required>
@@ -40,6 +45,12 @@
         <button type="submit" class="btn btn-primary">Send Message</button>
         <p class="form-note" id="formNote" role="status"></p>
       </form>
+
+      <div class="story-connector story-connector--dot" aria-hidden="true" style="--conn-from: var(--cream); --conn-to: var(--cream-alt); height: 44px;">
+        <span class="story-connector-line"></span>
+        <span class="story-connector-marker story-connector-marker--blue"></span>
+        <span class="story-connector-line"></span>
+      </div>
     </div>
   </section>
 

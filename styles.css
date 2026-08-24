@@ -118,6 +118,17 @@ img { max-width: 100%; display: block; }
   background: var(--blue-slate) !important;
 }
 
+/* Occasional larger marker at the site's major storytelling beats */
+.story-connector--major .story-connector-marker {
+  width: 9px;
+  height: 9px;
+}
+
+.story-connector--major.story-connector--diamond .story-connector-marker {
+  width: 10px;
+  height: 10px;
+}
+
 @media (max-width: 720px) {
   .story-connector {
     height: 44px;
@@ -302,12 +313,44 @@ img { max-width: 100%; display: block; }
 
 .scroll-cue {
   position: absolute;
-  bottom: 36px;
+  bottom: 34px;
   left: 50%;
   transform: translateX(-50%);
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(180deg, transparent, var(--accent) 70%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--blue-slate);
+  opacity: 0.7;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.scroll-cue:hover,
+.scroll-cue:focus-visible {
+  opacity: 1;
+  color: var(--blue-dusty);
+}
+
+.scroll-cue:focus-visible {
+  outline: 2px solid var(--blue-slate);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.scroll-cue-chevron {
+  animation: scroll-cue-drift 2.6s ease-in-out infinite;
+}
+
+@keyframes scroll-cue-drift {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(5px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-chevron {
+    animation: none;
+  }
 }
 
 /* ---------- Buttons ---------- */
@@ -433,10 +476,22 @@ img { max-width: 100%; display: block; }
 /* ---------- Story grid ---------- */
 .story-grid {
   display: grid;
-  grid-template-columns: minmax(260px, 400px) 1fr;
-  gap: 64px;
+  grid-template-columns: minmax(260px, 400px) 1px 1fr;
+  gap: 32px;
   align-items: start;
   margin-bottom: 60px;
+}
+
+.story-grid-line {
+  align-self: stretch;
+  width: 1px;
+  background: var(--blue-line);
+}
+
+@media (max-width: 860px) {
+  .story-grid-line {
+    display: none;
+  }
 }
 
 .portrait-frame {
@@ -1131,25 +1186,6 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---------- Contact ---------- */
-.back-home {
-  display: inline-block;
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 32px;
-  padding-bottom: 2px;
-  border-bottom: 1px solid transparent;
-  transition: color 0.25s ease, border-color 0.25s ease;
-}
-
-.back-home:hover,
-.back-home:focus-visible {
-  color: var(--accent-dark);
-  border-bottom-color: var(--accent-dark);
-}
-
 .contact-form {
   text-align: left;
   margin-top: 20px;
