@@ -14,11 +14,19 @@
   --clay-dark: #8f4830;
   --story-line: rgba(169, 118, 79, 0.35);
   --story-marker: rgba(175, 91, 60, 0.85);
+
+  /* Blue accent system, drawn from the healing card's ink navy */
+  --ink-blue: #23324f;
+  --blue-slate: #4c6088;
+  --blue-dusty: #7c8db3;
+  --blue-pale: #eef1f6;
+  --blue-pale-alt: #e6ebf3;
+  --blue-line: rgba(76, 96, 136, 0.32);
+  --blue-shadow: rgba(35, 50, 79, 0.16);
+
   --serif: 'Cormorant Garamond', Georgia, serif;
   --sans: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --max: 1100px;
-  --header-h: 76px;
-  --header-h-scrolled: 58px;
 }
 
 * { box-sizing: border-box; }
@@ -26,7 +34,7 @@
 html { scroll-behavior: smooth; }
 
 section[id], .chapter-intro[id] {
-  scroll-margin-top: var(--header-h-scrolled);
+  scroll-margin-top: 32px;
 }
 
 body {
@@ -51,117 +59,105 @@ a { color: inherit; text-decoration: none; }
 
 img { max-width: 100%; display: block; }
 
-/* ---------- Header ---------- */
-.site-header {
+/* ---------- Floating menu ---------- */
+.menu-fab-wrap {
+  position: fixed;
+  top: 28px;
+  right: 28px;
+  z-index: 500;
+}
+
+.menu-fab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: var(--warm-white);
-  border-bottom: 1px solid var(--line);
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  transition: box-shadow 0.35s ease;
-}
-
-.site-header.is-scrolled {
-  box-shadow: 0 8px 24px -18px rgba(43, 39, 35, 0.28);
-}
-
-.site-header-inner {
-  position: relative;
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: 26px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--header-h);
-  transition: padding 0.35s ease, min-height 0.35s ease;
-}
-
-.site-header.is-scrolled .site-header-inner {
-  padding: 15px 32px;
-  min-height: var(--header-h-scrolled);
-}
-
-.site-nav {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 34px;
-}
-
-.nav-indicator {
-  position: absolute;
-  bottom: 0;
-  height: 1px;
-  background: var(--clay);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 18px;
+  cursor: pointer;
+  box-shadow: 0 10px 28px -18px rgba(43, 39, 35, 0.3);
   opacity: 0;
-  transition: left 0.35s cubic-bezier(0.65, 0, 0.35, 1), width 0.35s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.3s ease;
+  transform: translateY(-6px);
   pointer-events: none;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-.nav-indicator.is-active {
+.menu-fab-wrap.is-visible .menu-fab {
   opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
-.site-nav a {
-  position: relative;
-  display: inline-block;
+.menu-fab:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 32px -16px rgba(43, 39, 35, 0.34);
+}
+
+.menu-fab-label {
   font-family: var(--sans);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  padding-bottom: 6px;
-  transition: color 0.3s ease;
 }
 
-.site-nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--accent-dark);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.3s ease;
-}
-
-.site-nav a:hover {
+.menu-fab[aria-expanded="true"] .menu-fab-label {
   color: var(--accent-dark);
 }
 
-.site-nav a:hover::after {
-  transform: scaleX(1);
+.menu-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+  min-width: 168px;
+  background: var(--warm-white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 22px 22px;
+  box-shadow: 0 22px 48px -20px rgba(43, 39, 35, 0.28);
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.site-nav a.is-active {
+.menu-panel.is-open {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.menu-panel a {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink);
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.menu-panel a:hover,
+.menu-panel a:focus-visible {
+  color: var(--accent-dark);
+  border-bottom-color: var(--accent-dark);
+}
+
+.menu-panel a.is-active {
   color: var(--clay);
 }
 
-.nav-toggle {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 32px;
-  height: 32px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  position: absolute;
-  right: 32px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.nav-toggle span {
-  display: block;
-  width: 100%;
-  height: 1px;
-  background: var(--ink);
+@media (max-width: 720px) {
+  .menu-fab-wrap {
+    top: 18px;
+    right: 18px;
+  }
 }
 
 /* ---------- Story thread connectors ---------- */
@@ -213,6 +209,14 @@ img { max-width: 100%; display: block; }
 .story-connector--dot .story-connector-marker {
   width: 4px;
   height: 4px;
+}
+
+.story-connector--blue .story-connector-marker {
+  background: var(--blue-slate);
+}
+
+.story-connector-marker--blue {
+  background: var(--blue-slate) !important;
 }
 
 @media (max-width: 720px) {
@@ -428,6 +432,15 @@ img { max-width: 100%; display: block; }
   margin-bottom: 14px;
 }
 
+.kicker-node {
+  display: block;
+  width: 5px;
+  height: 5px;
+  margin: 0 auto 40px;
+  border-radius: 50%;
+  background: var(--blue-slate);
+}
+
 .section-title {
   font-size: clamp(2rem, 4vw, 2.8rem);
   text-align: center;
@@ -479,7 +492,7 @@ img { max-width: 100%; display: block; }
 /* ---------- Story grid ---------- */
 .story-grid {
   display: grid;
-  grid-template-columns: minmax(240px, 360px) 1fr;
+  grid-template-columns: minmax(260px, 400px) 1fr;
   gap: 64px;
   align-items: start;
   margin-bottom: 60px;
@@ -489,6 +502,47 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--line);
   padding: 14px;
   background: var(--warm-white);
+}
+
+.story-text {
+  padding-top: 34px;
+}
+
+.story-topic {
+  position: relative;
+  padding-left: 6px;
+}
+
+.story-topic + .story-topic {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
+.story-topic:nth-of-type(2) {
+  border-top-color: var(--blue-line);
+}
+
+.story-topic-num {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.story-topic-num--blue {
+  color: var(--blue-slate);
+}
+
+.story-topic--accent {
+  background: var(--blue-pale);
+  padding: 24px 24px;
+  margin-left: -24px;
+  margin-right: -24px;
+  border-radius: 3px;
+  border-top: none !important;
 }
 
 .image-placeholder {
@@ -545,7 +599,7 @@ img { max-width: 100%; display: block; }
   max-width: 440px;
   margin: 56px auto 0;
   padding-top: 32px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--blue-line);
   text-align: center;
 }
 
@@ -598,49 +652,88 @@ img { max-width: 100%; display: block; }
   color: var(--clay);
 }
 
-/* ---------- Card feature ---------- */
+/* ---------- Card feature: museum-style display of the healing card ---------- */
 .card-feature {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 84px 24px 92px;
+  padding: 44px 24px 64px;
   background: var(--warm-white);
 }
 
 .card-feature-frame {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 56px 56px;
-  background: linear-gradient(175deg, var(--warm-white), var(--cream) 145%);
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 30px 40px 26px;
+  background: linear-gradient(175deg, var(--warm-white) 0%, var(--blue-pale) 130%);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  box-shadow: 0 34px 76px -38px rgba(43, 39, 35, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  box-shadow: 0 30px 60px -34px var(--blue-shadow), 0 18px 40px -28px rgba(43, 39, 35, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-.card-feature-frame .kicker {
-  margin-bottom: 30px;
+.card-feature-frame::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 14%;
+  right: 14%;
+  height: 2px;
+  background: var(--blue-slate);
+  opacity: 0.55;
+  border-radius: 2px;
+}
+
+.card-feature-label {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--blue-slate);
+  margin: 0 0 22px;
 }
 
 .card-feature-frame.is-visible:hover {
   transform: translateY(-3px);
-  box-shadow: 0 40px 88px -34px rgba(43, 39, 35, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  box-shadow: 0 36px 70px -30px var(--blue-shadow), 0 22px 46px -26px rgba(43, 39, 35, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.card-feature-img-crop {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(340px, 58vw);
+  aspect-ratio: 173 / 309;
+  overflow: hidden;
+  border-radius: 2px;
 }
 
 .card-feature-img {
-  position: relative;
-  flex: 0 0 auto;
-  width: 702px;
-  max-width: min(600px, 82vw);
-  height: auto;
-  object-fit: contain;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.66);
+  transform-origin: center;
+}
+
+.card-feature-caption {
+  margin-top: 20px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
 }
 
 @media (max-width: 720px) {
   .card-feature-frame {
-    padding: 32px 24px 36px;
+    padding: 26px 22px 24px;
   }
 }
 
@@ -658,28 +751,60 @@ img { max-width: 100%; display: block; }
   text-align: center;
 }
 
-/* ---------- Featured review wheel ---------- */
-.testimonial-strip {
+/* ---------- Kind Words: reviews band, embedded beneath the healing card ---------- */
+.reviews-band {
   position: relative;
-  background: var(--cream-alt);
+  background: linear-gradient(180deg, var(--cream-alt) 0%, var(--blue-pale) 100%);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  padding: 76px 0;
+  padding: 60px 0 76px;
   overflow: hidden;
 }
 
-.testimonial-strip[hidden] {
+.reviews-band[hidden] {
   display: none;
 }
 
-.testimonial-strip.is-empty {
-  padding: 88px 24px;
+.reviews-band-motif {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  height: 360px;
+  transform: translate(-50%, -50%);
+  background-color: var(--blue-dusty);
+  -webkit-mask-image: url('story-mandala.png');
+  mask-image: url('story-mandala.png');
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.testimonial-strip.is-empty .testimonial-track {
-  animation: none;
-  width: 100%;
+.reviews-band-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.reviews-band-head .kicker {
+  margin-bottom: 0;
+}
+
+/* ---------- Featured review wheel ---------- */
+.testimonial-strip {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
 }
 
 .testimonial-strip-viewport {
@@ -689,15 +814,9 @@ img { max-width: 100%; display: block; }
 
 .testimonial-track {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   width: max-content;
   animation: testimonial-marquee var(--marquee-duration, 60s) linear infinite;
-}
-
-@media (hover: hover) {
-  .testimonial-strip:hover .testimonial-track {
-    animation-play-state: paused;
-  }
 }
 
 @keyframes testimonial-marquee {
@@ -711,24 +830,23 @@ img { max-width: 100%; display: block; }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  width: min(440px, 82vw);
-  padding: 0 52px;
+  width: min(420px, 80vw);
+  margin: 0 14px;
+  padding: 32px 40px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+}
+
+.testimonial-item:nth-child(4n+3) {
+  background: rgba(76, 96, 136, 0.06);
 }
 
 .testimonial-divider {
   flex: 0 0 auto;
-  color: var(--clay);
-  opacity: 0.55;
-  font-size: 0.85rem;
-}
-
-.testimonial-empty {
-  width: 100%;
-  text-align: center;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.2rem;
-  color: var(--ink-soft);
+  align-self: center;
+  color: var(--blue-dusty);
+  opacity: 0.5;
+  font-size: 0.8rem;
 }
 
 .testimonial-stars {
@@ -758,12 +876,12 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 640px) {
-  .testimonial-strip {
-    padding: 56px 0;
+  .reviews-band {
+    padding: 48px 0 56px;
   }
 
   .testimonial-item {
-    padding: 0 32px;
+    padding: 26px 26px;
   }
 }
 
@@ -772,7 +890,7 @@ img { max-width: 100%; display: block; }
   flex-wrap: wrap;
   justify-content: center;
   width: auto;
-  row-gap: 40px;
+  row-gap: 28px;
   padding: 0 24px;
 }
 
@@ -786,7 +904,7 @@ img { max-width: 100%; display: block; }
     flex-wrap: wrap;
     justify-content: center;
     width: auto;
-    row-gap: 40px;
+    row-gap: 28px;
     padding: 0 24px;
   }
 
@@ -795,60 +913,16 @@ img { max-width: 100%; display: block; }
   }
 }
 
-/* ---------- Reviews ---------- */
-.section#reviews {
-  position: relative;
-  overflow: hidden;
-  background: var(--cream);
-  padding-top: 104px;
-  padding-bottom: 88px;
-}
-
-.section#reviews .section-inner {
-  position: relative;
-  z-index: 1;
-}
-
-.section-title-lead {
-  margin-top: 8px;
-}
-
-.reviews-motif {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 460px;
-  height: 460px;
-  transform: translate(-50%, -50%);
-  background-color: #9fb2d1;
-  -webkit-mask-image: url('story-mandala.png');
-  mask-image: url('story-mandala.png');
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  opacity: 0.1;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.reviews-actions {
-  text-align: center;
-  margin-top: 8px;
-}
-
 @media (max-width: 720px) {
-  .reviews-motif {
-    width: 300px;
-    height: 300px;
-    opacity: 0.09;
+  .reviews-band-motif {
+    width: 240px;
+    height: 240px;
+    opacity: 0.07;
   }
 }
 
 @media (max-width: 480px) {
-  .reviews-motif {
+  .reviews-band-motif {
     display: none;
   }
 }
@@ -1234,35 +1308,18 @@ img { max-width: 100%; display: block; }
     max-width: 340px;
     margin: 0 auto;
   }
+
+  .story-text {
+    padding-top: 0;
+    margin-top: 40px;
+  }
 }
 
 @media (max-width: 720px) {
-  .site-header-inner {
-    padding: 18px 20px;
-    flex-wrap: wrap;
-  }
-
-  .nav-toggle {
-    display: flex;
-    right: 20px;
-  }
-
-  .nav-indicator {
-    display: none;
-  }
-
-  .site-nav {
-    display: none;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-    width: 100%;
-    padding-top: 20px;
-    order: 3;
-  }
-
-  .site-nav.open {
-    display: flex;
+  .story-topic--accent {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 22px 20px;
   }
 
   .section {

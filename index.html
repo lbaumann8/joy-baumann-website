@@ -12,20 +12,18 @@
 </head>
 <body>
 
-<header class="site-header">
-  <div class="site-header-inner">
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="siteNav">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="site-nav" id="siteNav" aria-label="Primary">
-      <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
-      <a href="/#her-story">Her Story</a>
-      <a href="/#chapter-two">Chapters</a>
-      <a href="/#reviews">Reviews</a>
-      <a href="/contact">Contact</a>
-    </nav>
-  </div>
-</header>
+<!-- FLOATING MENU -->
+<div class="menu-fab-wrap" id="menuFabWrap">
+  <button type="button" class="menu-fab" id="menuFab" aria-haspopup="true" aria-expanded="false" aria-controls="menuPanel">
+    <span class="menu-fab-label" id="menuFabLabel">Menu</span>
+  </button>
+  <nav class="menu-panel" id="menuPanel" aria-label="Primary">
+    <a href="/#her-story">Her Story</a>
+    <a href="/#chapter-two">Chapters</a>
+    <a href="/#reviews" class="js-reviews-link">Reviews</a>
+    <a href="/contact">Contact</a>
+  </nav>
+</div>
 
 <main>
 
@@ -42,7 +40,7 @@
     <div class="scroll-cue" aria-hidden="true"></div>
   </section>
 
-  <div class="story-connector story-connector--diamond" aria-hidden="true">
+  <div class="story-connector story-connector--diamond story-connector--blue" aria-hidden="true">
     <span class="story-connector-line"></span>
     <span class="story-connector-marker"></span>
     <span class="story-connector-line"></span>
@@ -52,8 +50,8 @@
   <section class="section" id="her-story">
     <div class="section-inner">
       <p class="kicker reveal">Her Story</p>
-      <h2 class="section-title reveal" style="transition-delay: 90ms;">Her Story</h2>
-      <p class="section-intro reveal" style="transition-delay: 180ms;">
+      <span class="kicker-node reveal" style="transition-delay: 60ms;" aria-hidden="true"></span>
+      <p class="section-intro reveal" style="transition-delay: 120ms;">
         Her life and work reflect a deeply personal journey shaped by creativity, courage, struggle, discovery, and healing. This space is dedicated to sharing her story, preserving her voice, and exploring the experiences that made her life so extraordinary.
       </p>
 
@@ -63,30 +61,54 @@
             <span>Portrait Photograph</span>
           </div>
         </div>
-        <div class="story-text reveal" style="transition-delay: 120ms;">
-          <h3 class="sub-title">Biography</h3>
-          <p class="placeholder-copy">Space reserved for a longer biography — the arc of her life, the places she called home, and the people who shaped her.</p>
+        <div class="story-text">
+          <div class="story-topic reveal" style="transition-delay: 140ms;">
+            <span class="story-topic-num">01</span>
+            <h3 class="sub-title">Biography</h3>
+            <p class="placeholder-copy">Space reserved for a longer biography — the arc of her life, the places she called home, and the people who shaped her.</p>
+          </div>
 
-          <h3 class="sub-title">Moments &amp; Milestones</h3>
-          <p class="placeholder-copy">Space reserved for the important moments from her life — turning points, discoveries, and the experiences that defined her path.</p>
+          <div class="story-topic reveal" style="transition-delay: 220ms;">
+            <span class="story-topic-num">02</span>
+            <h3 class="sub-title">Moments &amp; Milestones</h3>
+            <p class="placeholder-copy">Space reserved for the important moments from her life — turning points, discoveries, and the experiences that defined her path.</p>
+          </div>
 
-          <h3 class="sub-title">Her Philosophy</h3>
-          <p class="placeholder-copy">Space reserved for her personal philosophy and approach to healing — the beliefs and practices that guided her.</p>
+          <div class="story-topic story-topic--accent reveal" style="transition-delay: 300ms;">
+            <span class="story-topic-num story-topic-num--blue">03</span>
+            <h3 class="sub-title">Her Philosophy</h3>
+            <p class="placeholder-copy">Space reserved for her personal philosophy and approach to healing — the beliefs and practices that guided her.</p>
+          </div>
         </div>
       </div>
 
       <div class="card-feature">
-        <div class="card-feature-frame reveal-card">
-          <p class="kicker">Healing Out of the Ordinary</p>
-          <img src="card.png" alt="A keepsake card reading: The gift of freedom is often hindered by limiting beliefs, old patterns and unhealed wounds. I will teach you how to use your brain to get what your heart wants in this life. Guiding you to approaching life through your highest self. Grief Work. Spiritual Healing. Trauma Resolution. Spiritual Integration Oneness." class="card-feature-img">
-        </div>
+        <figure class="card-feature-frame reveal-card">
+          <p class="card-feature-label">Healing Out of the Ordinary</p>
+          <div class="card-feature-img-crop">
+            <img src="card.png" alt="A keepsake card reading: The gift of freedom is often hindered by limiting beliefs, old patterns and unhealed wounds. I will teach you how to use your brain to get what your heart wants in this life. Guiding you to approaching life through your highest self. Grief Work. Spiritual Healing. Trauma Resolution. Spiritual Integration Oneness." class="card-feature-img">
+          </div>
+          <figcaption class="card-feature-caption">A keepsake from Joy&rsquo;s practice</figcaption>
+        </figure>
       </div>
+    </div>
+  </section>
+
+  <!-- KIND WORDS: embedded directly beneath the healing card, shown only when reviews exist -->
+  <section class="reviews-band" id="reviews" hidden>
+    <div class="reviews-band-motif" aria-hidden="true"></div>
+    <div class="reviews-band-head reveal">
+      <p class="kicker">Kind Words</p>
+      <button type="button" class="btn-quiet" id="leaveReviewBtn">Leave a Review</button>
+    </div>
+    <div class="testimonial-strip" id="testimonialStrip">
+      <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
     </div>
   </section>
 
   <div class="story-connector story-connector--circle" aria-hidden="true" style="--conn-from: var(--warm-white); --conn-to: var(--cream);">
     <span class="story-connector-line"></span>
-    <span class="story-connector-marker"></span>
+    <span class="story-connector-marker story-connector-marker--blue"></span>
     <span class="story-connector-line"></span>
   </div>
 
@@ -103,31 +125,6 @@
         <a href="https://anthologyofunusualpresentations.com" class="anthology-note-link" target="_blank" rel="noopener noreferrer">Visit anthologyofunusualpresentations.com <span class="link-arrow" aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
-  </section>
-
-  <div class="story-connector story-connector--dot" aria-hidden="true" style="--conn-from: var(--cream); --conn-to: var(--cream);">
-    <span class="story-connector-line"></span>
-    <span class="story-connector-marker"></span>
-    <span class="story-connector-line"></span>
-  </div>
-
-  <!-- KIND WORDS / REVIEWS (closing layer) -->
-  <section class="section" id="reviews">
-    <div class="reviews-motif" aria-hidden="true"></div>
-    <div class="section-inner">
-      <p class="kicker reveal">Kind Words</p>
-      <h2 class="section-title section-title-lead reveal" style="transition-delay: 90ms;">Kind Words</h2>
-      <p class="section-intro reveal" style="transition-delay: 180ms;">Experiences shared by those who have worked with Joy.</p>
-
-      <div class="reviews-actions reveal" style="transition-delay: 260ms;">
-        <button type="button" class="btn btn-outline" id="leaveReviewBtn">Leave a Review</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURED REVIEW WHEEL -->
-  <section class="testimonial-strip reveal" id="testimonialStrip" aria-label="Featured client reviews" hidden>
-    <div class="testimonial-strip-viewport" id="testimonialViewport"></div>
   </section>
 
 </main>
@@ -196,7 +193,7 @@
     <nav class="footer-links" aria-label="Footer">
       <a href="/#her-story">Her Story</a>
       <a href="/#chapter-two">Chapters</a>
-      <a href="/#reviews">Reviews</a>
+      <a href="/#reviews" class="js-reviews-link">Reviews</a>
       <a href="/contact">Contact</a>
     </nav>
     <p class="footer-copy">&copy; <span id="year"></span> Joy Baumann. All rights reserved.</p>

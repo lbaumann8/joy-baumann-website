@@ -1,87 +1,92 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Mobile nav toggle
-const navToggle = document.getElementById('navToggle');
-const siteNav = document.getElementById('siteNav');
-const siteHeader = document.querySelector('.site-header');
+// ---------- Floating menu ----------
+(function initFloatingMenu() {
+  const wrap = document.getElementById('menuFabWrap');
+  const fab = document.getElementById('menuFab');
+  const panel = document.getElementById('menuPanel');
+  if (!wrap || !fab || !panel) return;
 
-navToggle.addEventListener('click', () => {
-  const isOpen = siteNav.classList.toggle('open');
-  navToggle.setAttribute('aria-expanded', isOpen);
-});
+  const hero = document.querySelector('.hero');
 
-siteNav.querySelectorAll('a').forEach((link) => {
-  link.addEventListener('click', () => {
-    siteNav.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
-  });
-});
-
-// Sticky nav: shrink slightly once the page has scrolled
-(function initHeaderScroll() {
-  if (!siteHeader) return;
-  const SCROLL_THRESHOLD = 24;
-  let ticking = false;
-
-  function updateHeaderState() {
-    siteHeader.classList.toggle('is-scrolled', window.scrollY > SCROLL_THRESHOLD);
-    ticking = false;
-  }
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(updateHeaderState);
-      ticking = true;
+  function updateVisibility() {
+    if (!hero) {
+      wrap.classList.add('is-visible');
+      return;
     }
-  }, { passive: true });
-
-  updateHeaderState();
-})();
-
-// Active nav state: scroll-spy on the homepage, static on /contact
-(function initNavActiveState() {
-  const allNavLinks = Array.from(siteNav.querySelectorAll('a'));
-  if (allNavLinks.length === 0) return;
-
-  const navIndicator = document.getElementById('navIndicator');
-
-  function moveIndicatorTo(link) {
-    if (!navIndicator || !link) return;
-    const navRect = siteNav.getBoundingClientRect();
-    const linkRect = link.getBoundingClientRect();
-    navIndicator.style.left = `${linkRect.left - navRect.left}px`;
-    navIndicator.style.width = `${linkRect.width}px`;
-    navIndicator.classList.add('is-active');
+    const heroBottom = hero.getBoundingClientRect().bottom;
+    wrap.classList.toggle('is-visible', heroBottom < window.innerHeight * 0.55);
   }
+
+  if (hero) {
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateVisibility();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+    updateVisibility();
+  } else {
+    wrap.classList.add('is-visible');
+  }
+
+  function openMenu() {
+    panel.classList.add('is-open');
+    fab.setAttribute('aria-expanded', 'true');
+    document.addEventListener('keydown', onMenuKeydown);
+    document.addEventListener('click', onOutsideClick, true);
+  }
+
+  function closeMenu() {
+    panel.classList.remove('is-open');
+    fab.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('keydown', onMenuKeydown);
+    document.removeEventListener('click', onOutsideClick, true);
+  }
+
+  function onMenuKeydown(e) {
+    if (e.key === 'Escape') {
+      closeMenu();
+      fab.focus();
+    }
+  }
+
+  function onOutsideClick(e) {
+    if (!panel.contains(e.target) && e.target !== fab) closeMenu();
+  }
+
+  fab.addEventListener('click', () => {
+    if (panel.classList.contains('is-open')) closeMenu();
+    else openMenu();
+  });
+
+  panel.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => closeMenu());
+  });
+
+  // Active state: scroll-spy on the homepage, static on /contact
+  const allLinks = Array.from(panel.querySelectorAll('a'));
+  if (allLinks.length === 0) return;
 
   const isContactPage = window.location.pathname.replace(/\/index\.html$/, '/') === '/contact'
     || window.location.pathname.endsWith('/contact.html');
 
   function setActiveLink(href) {
-    let activeLink = null;
-    allNavLinks.forEach((link) => {
-      const isMatch = link.getAttribute('href') === href;
-      link.classList.toggle('is-active', isMatch);
-      if (isMatch) activeLink = link;
+    allLinks.forEach((link) => {
+      link.classList.toggle('is-active', link.getAttribute('href') === href);
     });
-    if (activeLink) moveIndicatorTo(activeLink);
   }
-
-  let navResizeTimer;
-  window.addEventListener('resize', () => {
-    window.clearTimeout(navResizeTimer);
-    navResizeTimer = window.setTimeout(() => {
-      const current = allNavLinks.find((link) => link.classList.contains('is-active'));
-      if (current) moveIndicatorTo(current);
-    }, 200);
-  });
 
   if (isContactPage) {
     setActiveLink('/contact');
     return;
   }
 
-  const hashLinks = allNavLinks
+  const hashLinks = allLinks
     .map((link) => ({ link, hash: (link.getAttribute('href') || '').split('#')[1] }))
     .filter((entry) => entry.hash)
     .map((entry) => ({ ...entry, section: document.getElementById(entry.hash) }))
@@ -89,7 +94,7 @@ siteNav.querySelectorAll('a').forEach((link) => {
 
   if (hashLinks.length === 0 || !('IntersectionObserver' in window)) return;
 
-  const observer = new IntersectionObserver(
+  const spyObserver = new IntersectionObserver(
     (entries) => {
       const visible = entries
         .filter((entry) => entry.isIntersecting)
@@ -102,7 +107,28 @@ siteNav.querySelectorAll('a').forEach((link) => {
     { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
   );
 
-  hashLinks.forEach((entry) => observer.observe(entry.section));
+  hashLinks.forEach((entry) => spyObserver.observe(entry.section));
+})();
+
+// ---------- Reviews nav links: scroll to the strip if present, otherwise open the form ----------
+(function initReviewsLinks() {
+  const links = document.querySelectorAll('.js-reviews-link');
+  if (links.length === 0) return;
+
+  links.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const onHomepage = window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
+      if (!onHomepage) return;
+
+      const reviewsSection = document.getElementById('reviews');
+      const hasReviews = reviewsSection && !reviewsSection.hidden;
+      if (hasReviews) return;
+
+      e.preventDefault();
+      const leaveReviewBtn = document.getElementById('leaveReviewBtn');
+      if (leaveReviewBtn) leaveReviewBtn.click();
+    });
+  });
 })();
 
 // Scroll reveal: sections, cards, images fade/rise into place; the story
@@ -147,9 +173,9 @@ siteNav.querySelectorAll('a').forEach((link) => {
   }
 })();
 
-// Reviews motif: a few pixels of parallax drift, decorative only
+// Reviews band motif: a few pixels of parallax drift, decorative only
 (function initMotifParallax() {
-  const motif = document.querySelector('.reviews-motif');
+  const motif = document.querySelector('.reviews-band-motif');
   if (!motif) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -303,25 +329,22 @@ if (contactForm) {
     };
   }
 
+  // No reviews yet: keep the entire band out of the DOM flow — no strip,
+  // no heading, no reserved space. It reappears the moment a review exists.
   function renderTestimonialStrip(reviews) {
     stripReviews = Array.isArray(reviews) ? reviews : [];
     stripViewport.innerHTML = '';
-    stripEl.hidden = false;
+
+    if (stripReviews.length === 0) {
+      section.hidden = true;
+      return;
+    }
+
+    section.hidden = false;
 
     const track = document.createElement('div');
     track.className = 'testimonial-track';
     stripViewport.appendChild(track);
-
-    if (stripReviews.length === 0) {
-      stripEl.classList.add('is-empty');
-      const empty = document.createElement('p');
-      empty.className = 'testimonial-empty';
-      empty.textContent = 'Be the first to share your experience.';
-      track.appendChild(empty);
-      return;
-    }
-
-    stripEl.classList.remove('is-empty');
 
     if (prefersReducedMotion) {
       stripEl.classList.add('is-static');
@@ -346,9 +369,15 @@ if (contactForm) {
       const res = await fetch('/api/reviews');
       const data = await res.json();
       allReviews = Array.isArray(data.reviews) ? data.reviews : [];
-      renderTestimonialStrip(allReviews);
     } catch (err) {
-      renderTestimonialStrip([]);
+      allReviews = [];
+    }
+    renderTestimonialStrip(allReviews);
+
+    // If a visitor arrived via a Reviews link before this fetch resolved and
+    // there turn out to be no reviews to scroll to, open the form instead.
+    if (window.location.hash === '#reviews' && section.hidden) {
+      leaveReviewBtn.click();
     }
   }
 
