@@ -44,7 +44,7 @@ section[id], .chapter-intro[id] {
 body {
   margin: 0;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   font-family: var(--sans);
   color: var(--ink);
   background: var(--warm-white);
@@ -65,29 +65,42 @@ a { color: inherit; text-decoration: none; }
 
 img { max-width: 100%; display: block; }
 
-/* ---------- Story thread connectors ---------- */
+/* ---------- Continuous story spine ----------
+   One absolute layer spans the full storytelling portion of the page
+   (below the hero through the end of Chapter Two) so the timeline never
+   breaks into per-section fragments. Section content paints above it;
+   diamond markers sit on top at each transition. */
+.story-spine-wrap {
+  position: relative;
+  isolation: isolate;
+}
+
+.story-spine-wrap > *:not(.story-spine) {
+  position: relative;
+  z-index: 1;
+}
+
+.story-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  background: var(--story-line);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---------- Story thread connectors: spacing + marker only, the line itself is .story-spine ---------- */
 .story-connector {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   height: 64px;
   background: linear-gradient(to bottom, var(--conn-from, var(--warm-white)), var(--conn-to, var(--warm-white)));
-}
-
-.story-connector-line {
-  width: 1px;
-  flex: 1 1 auto;
-  background: var(--story-line);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.story-connector.is-drawn .story-connector-line {
-  transform: scaleY(1);
 }
 
 .story-connector-marker {
@@ -149,7 +162,6 @@ img { max-width: 100%; display: block; }
   .reveal,
   .reveal-card,
   .reveal-img,
-  .story-connector-line,
   .story-connector-marker {
     opacity: 1 !important;
     transform: none !important;
@@ -746,7 +758,7 @@ img { max-width: 100%; display: block; }
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   overflow-x: hidden;
   overflow-y: visible;
   background: linear-gradient(180deg, var(--blue-pale) 0%, var(--cream-alt) 100%);
@@ -759,10 +771,15 @@ img { max-width: 100%; display: block; }
   display: none;
 }
 
+/* The viewport clips the moving track only — it never affects page width.
+   A matching mask fades both edges identically, so wherever the marquee
+   happens to be, the same soft edge treatment shows on the left and right. */
 .testimonial-strip-viewport {
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
 .testimonial-track {
@@ -853,6 +870,8 @@ img { max-width: 100%; display: block; }
 
 .testimonial-strip.is-static .testimonial-strip-viewport {
   overflow: visible;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -867,6 +886,8 @@ img { max-width: 100%; display: block; }
 
   .testimonial-strip-viewport {
     overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 
