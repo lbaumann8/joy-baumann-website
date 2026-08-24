@@ -226,7 +226,7 @@ img { max-width: 100%; display: block; }
   margin-bottom: 0;
   position: relative;
   top: 0;
-  overflow: hidden;
+  overflow: visible;
   background-color: var(--warm-white);
 }
 
@@ -264,52 +264,55 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 28px 68px -30px rgba(43, 39, 35, 0.24);
 }
 
-/* Subtle editorial crop-mark accents at the hero card's four corners —
-   sit on top of the existing ivory card and neutral border, not a border
-   of their own, so the card stays calm and never reads as boxed-in. */
+/* Editorial corner brackets that frame the hero card from a deliberate
+   distance — floating outside the card as its own accent, not a border
+   attached to the card edge. */
 .hero-corner {
+  --corner-offset: 56px;
+  --corner-length: 84px;
+  --corner-thickness: 2.5px;
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: var(--corner-length);
+  height: var(--corner-length);
   opacity: 0;
   pointer-events: none;
   transition: opacity 1s ease 0.3s;
 }
 
 .hero-panel.is-visible .hero-corner {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
 .hero-panel.is-visible:hover .hero-corner {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .hero-corner--tl {
-  top: -1px;
-  left: -1px;
-  border-top: 1px solid var(--blue-slate);
-  border-left: 1px solid var(--blue-slate);
+  top: calc(var(--corner-offset) * -1);
+  left: calc(var(--corner-offset) * -1);
+  border-top: var(--corner-thickness) solid var(--blue-slate);
+  border-left: var(--corner-thickness) solid var(--blue-slate);
 }
 
 .hero-corner--tr {
-  top: -1px;
-  right: -1px;
-  border-top: 1px solid var(--blue-slate);
-  border-right: 1px solid var(--blue-slate);
+  top: calc(var(--corner-offset) * -1);
+  right: calc(var(--corner-offset) * -1);
+  border-top: var(--corner-thickness) solid var(--blue-slate);
+  border-right: var(--corner-thickness) solid var(--blue-slate);
 }
 
 .hero-corner--bl {
-  bottom: -1px;
-  left: -1px;
-  border-bottom: 1px solid var(--blue-slate);
-  border-left: 1px solid var(--blue-slate);
+  bottom: calc(var(--corner-offset) * -1);
+  left: calc(var(--corner-offset) * -1);
+  border-bottom: var(--corner-thickness) solid var(--blue-slate);
+  border-left: var(--corner-thickness) solid var(--blue-slate);
 }
 
 .hero-corner--br {
-  bottom: -1px;
-  right: -1px;
-  border-bottom: 1px solid var(--blue-slate);
-  border-right: 1px solid var(--blue-slate);
+  bottom: calc(var(--corner-offset) * -1);
+  right: calc(var(--corner-offset) * -1);
+  border-bottom: var(--corner-thickness) solid var(--blue-slate);
+  border-right: var(--corner-thickness) solid var(--blue-slate);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -320,8 +323,9 @@ img { max-width: 100%; display: block; }
 
 @media (max-width: 720px) {
   .hero-corner {
-    width: 20px;
-    height: 20px;
+    --corner-offset: 20px;
+    --corner-length: 44px;
+    --corner-thickness: 2px;
   }
 }
 
@@ -503,8 +507,14 @@ img { max-width: 100%; display: block; }
 .placeholder-copy.center { text-align: center; max-width: 560px; margin: 0 auto; }
 
 /* ---------- Her Story section ---------- */
+/* Opaque across its full box (not just the intro block) so the story spine —
+   a single element spanning the whole .story-spine-wrap behind everything —
+   never shows through any gap in the grid, image, or card below. The line
+   breaks at this section's top edge and resumes at its bottom edge. */
 .section#her-story {
   position: relative;
+  z-index: 2;
+  background: var(--warm-white);
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -1378,7 +1388,7 @@ img { max-width: 100%; display: block; }
   }
 
   .hero {
-    padding: 0 20px 70px;
+    padding: 0 32px 70px;
     margin-bottom: 0;
   }
 

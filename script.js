@@ -112,7 +112,7 @@ if (contactForm) {
   const stripViewport = document.getElementById('testimonialViewport');
 
   const MARQUEE_SPEED_PX_S = 42;
-  const MARQUEE_MIN_REVIEWS = 3;
+  const MARQUEE_MIN_REVIEWS = 2;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let stripReviews = [];
 
