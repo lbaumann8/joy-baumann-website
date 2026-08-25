@@ -600,6 +600,10 @@ img { max-width: 100%; display: block; }
   line-height: 1.75;
 }
 
+.story-text .placeholder-copy + .placeholder-copy {
+  margin-top: 16px;
+}
+
 /* subtle pale-blue divider between the intro and the story grid */
 .story-divider {
   display: block;
