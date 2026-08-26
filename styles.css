@@ -849,6 +849,40 @@ img { max-width: 100%; display: block; }
   display: none;
 }
 
+.view-all-reviews {
+  display: block;
+  width: fit-content;
+  margin: 32px auto 0;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-slate);
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.view-all-reviews:hover,
+.view-all-reviews:focus-visible {
+  color: var(--ink-blue);
+  border-bottom-color: var(--blue-slate);
+}
+
+.view-all-reviews:focus-visible {
+  outline: 2px solid var(--blue-slate);
+  outline-offset: 3px;
+}
+
+.view-all-reviews .link-arrow {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.view-all-reviews:hover .link-arrow,
+.view-all-reviews:focus-visible .link-arrow {
+  transform: translateX(4px);
+}
+
 /* The viewport clips the moving track only — it never affects page width.
    A matching mask fades both edges identically, so wherever the marquee
    happens to be, the same soft edge treatment shows on the left and right. */
@@ -905,12 +939,18 @@ img { max-width: 100%; display: block; }
 }
 
 .testimonial-quote {
+  width: 100%;
   font-family: var(--serif);
   font-style: italic;
   font-size: clamp(1.1rem, 1.8vw, 1.4rem);
   line-height: 1.65;
   color: var(--ink);
   margin: 0 0 18px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
 }
 
 .testimonial-name {
@@ -921,6 +961,32 @@ img { max-width: 100%; display: block; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-soft);
+}
+
+.testimonial-view-more {
+  margin: -4px 0 18px;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue-slate);
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.testimonial-view-more:not([hidden]) {
+  display: inline-block;
+}
+
+.testimonial-view-more:hover,
+.testimonial-view-more:focus-visible {
+  color: var(--ink-blue);
+  border-bottom-color: var(--blue-slate);
+}
+
+.testimonial-view-more:focus-visible {
+  outline: 2px solid var(--blue-slate);
+  outline-offset: 3px;
 }
 
 @media (max-width: 640px) {
@@ -1295,6 +1361,52 @@ img { max-width: 100%; display: block; }
   color: var(--accent-dark);
   text-align: center;
   min-height: 1.2em;
+}
+
+/* ---------- Full reviews page (/reviews) ---------- */
+.reviews-page .section-title {
+  margin-bottom: 56px;
+}
+
+.full-reviews-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-review {
+  padding: 40px 0;
+  border-top: 1px solid var(--blue-line);
+}
+
+.full-review:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.full-review-stars {
+  color: var(--accent);
+  font-size: 1rem;
+  letter-spacing: 4px;
+  margin-bottom: 18px;
+}
+
+.full-review-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  line-height: 1.75;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+
+.full-review-name {
+  display: block;
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
 
 /* ---------- Footer ---------- */

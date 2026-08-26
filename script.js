@@ -138,8 +138,37 @@ if (contactForm) {
 
     item.appendChild(stars);
     item.appendChild(quote);
+
+    if (!isDuplicate) {
+      const viewMore = document.createElement('a');
+      viewMore.className = 'testimonial-view-more';
+      viewMore.href = review.id != null ? `/reviews#review-${review.id}` : '/reviews';
+      viewMore.textContent = 'View more';
+      viewMore.hidden = true;
+      item.appendChild(viewMore);
+      // Deferred: the quote isn't laid out with its line-clamp yet, so
+      // scrollHeight vs. clientHeight can't be measured until it's in the DOM.
+      item.dataset.pendingTruncationCheck = 'true';
+    }
+
     item.appendChild(name);
+
     return item;
+  }
+
+  // Line-clamp only clips visually — it doesn't tell us whether a quote was
+  // actually cut short. Measure each one once it's laid out in the live DOM
+  // and reveal "View more" only where text was truly truncated.
+  function revealTruncatedLinks(track) {
+    track.querySelectorAll('.testimonial-item[data-pending-truncation-check]').forEach((item) => {
+      delete item.dataset.pendingTruncationCheck;
+      const quote = item.querySelector('.testimonial-quote');
+      const link = item.querySelector('.testimonial-view-more');
+      if (!quote || !link) return;
+      if (quote.scrollHeight > quote.clientHeight + 1) {
+        link.hidden = false;
+      }
+    });
   }
 
   function renderDivider() {
@@ -209,6 +238,7 @@ if (contactForm) {
     if (!useMarquee) {
       stripEl.classList.add('is-static');
       appendReviewSet(track, stripReviews, false);
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => revealTruncatedLinks(track)));
       return;
     }
 
@@ -216,7 +246,10 @@ if (contactForm) {
     appendReviewUnit(track, stripReviews, false);
     appendReviewUnit(track, stripReviews, true);
 
-    window.requestAnimationFrame(() => window.requestAnimationFrame(updateMarqueeSpeed));
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      updateMarqueeSpeed();
+      revealTruncatedLinks(track);
+    }));
   }
 
   window.addEventListener('resize', debounce(() => {
@@ -442,4 +475,70 @@ if (contactForm) {
   });
 
   loadReviews();
+})();
+
+// ---------- Full reviews page (/reviews) ----------
+(function initFullReviewsPage() {
+  const list = document.getElementById('fullReviewsList');
+  if (!list) return;
+
+  const statusEl = document.getElementById('fullReviewsStatus');
+
+  function starGlyphs(rating) {
+    const full = Math.round(rating);
+    let out = '';
+    for (let i = 1; i <= 5; i++) {
+      out += i <= full ? '★' : '<span class="star-empty">★</span>';
+    }
+    return out;
+  }
+
+  function renderFullReview(review) {
+    const article = document.createElement('article');
+    article.className = 'full-review';
+    if (review.id != null) article.id = `review-${review.id}`;
+
+    const stars = document.createElement('div');
+    stars.className = 'full-review-stars';
+    stars.setAttribute('aria-hidden', 'true');
+    stars.innerHTML = starGlyphs(review.rating);
+
+    const quote = document.createElement('blockquote');
+    quote.className = 'full-review-quote';
+    quote.textContent = `“${review.review_text}”`;
+
+    const name = document.createElement('cite');
+    name.className = 'full-review-name';
+    name.textContent = `— ${review.name}`;
+
+    article.appendChild(stars);
+    article.appendChild(quote);
+    article.appendChild(name);
+    return article;
+  }
+
+  async function loadFullReviews() {
+    try {
+      const res = await fetch('/api/reviews');
+      const data = await res.json();
+      const reviews = Array.isArray(data.reviews) ? data.reviews : [];
+
+      if (reviews.length === 0) {
+        if (statusEl) statusEl.textContent = 'No reviews yet — be the first to share your experience.';
+        return;
+      }
+
+      if (statusEl) statusEl.remove();
+      reviews.forEach((review) => list.appendChild(renderFullReview(review)));
+
+      if (location.hash.startsWith('#review-')) {
+        const target = document.getElementById(location.hash.slice(1));
+        if (target) target.scrollIntoView({ block: 'center' });
+      }
+    } catch (err) {
+      if (statusEl) statusEl.textContent = 'Reviews are temporarily unavailable. Please try again shortly.';
+    }
+  }
+
+  loadFullReviews();
 })();
