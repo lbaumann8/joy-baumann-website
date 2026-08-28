@@ -120,7 +120,7 @@ if (contactForm) {
     const item = document.createElement('div');
     item.className = 'testimonial-item';
     item.setAttribute('role', 'group');
-    item.setAttribute('aria-roledescription', 'review');
+    item.setAttribute('aria-roledescription', 'testimony');
     if (isDuplicate) item.setAttribute('aria-hidden', 'true');
 
     const stars = document.createElement('div');
@@ -412,9 +412,9 @@ if (contactForm) {
     }
     const text = textInput.value.trim();
     if (text.length === 0) {
-      errors.review_text = 'Please write a review before submitting.';
+      errors.review_text = 'Please write a testimony before submitting.';
     } else if (text.length > REVIEW_TEXT_MAX) {
-      errors.review_text = `Review must be ${REVIEW_TEXT_MAX} characters or fewer.`;
+      errors.review_text = `Testimony must be ${REVIEW_TEXT_MAX} characters or fewer.`;
     }
     return errors;
   }
@@ -470,7 +470,7 @@ if (contactForm) {
       formErrorEl.textContent = 'Something went wrong. Please check your connection and try again.';
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Review';
+      submitBtn.textContent = 'Submit Testimony';
     }
   });
 
@@ -524,7 +524,7 @@ if (contactForm) {
       const reviews = Array.isArray(data.reviews) ? data.reviews : [];
 
       if (reviews.length === 0) {
-        if (statusEl) statusEl.textContent = 'No reviews yet — be the first to share your experience.';
+        if (statusEl) statusEl.textContent = 'No testimonies yet — be the first to share your experience.';
         return;
       }
 
@@ -536,7 +536,7 @@ if (contactForm) {
         if (target) target.scrollIntoView({ block: 'center' });
       }
     } catch (err) {
-      if (statusEl) statusEl.textContent = 'Reviews are temporarily unavailable. Please try again shortly.';
+      if (statusEl) statusEl.textContent = 'Testimonies are temporarily unavailable. Please try again shortly.';
     }
   }
 

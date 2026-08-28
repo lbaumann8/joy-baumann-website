@@ -50,9 +50,9 @@ function validate(body) {
 
   const reviewText = clean(body.review_text);
   if (reviewText.length === 0) {
-    errors.review_text = 'Please write a review before submitting.';
+    errors.review_text = 'Please write a testimony before submitting.';
   } else if (reviewText.length > REVIEW_MAX) {
-    errors.review_text = `Review must be ${REVIEW_MAX} characters or fewer.`;
+    errors.review_text = `Testimony must be ${REVIEW_MAX} characters or fewer.`;
   }
 
   return {
@@ -119,7 +119,7 @@ async function handlePost(req, res) {
   `;
 
   if (recent.length >= RATE_LIMIT_MAX_PER_WINDOW) {
-    res.status(429).json({ ok: false, error: 'Too many reviews submitted recently. Please try again later.' });
+    res.status(429).json({ ok: false, error: 'Too many testimonies submitted recently. Please try again later.' });
     return;
   }
 
