@@ -1446,6 +1446,13 @@ img { max-width: 100%; display: block; }
   color: var(--accent-dark);
 }
 
+.footer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .footer-copy {
   font-size: 0.78rem;
   letter-spacing: 0.03em;
@@ -1453,12 +1460,14 @@ img { max-width: 100%; display: block; }
 }
 
 .footer-credit {
-  margin-top: 4px;
   font-family: var(--sans);
   font-size: 0.66rem;
   letter-spacing: 0.03em;
-  color: var(--ink-soft);
-  opacity: 0.55;
+  color: rgba(85, 80, 74, 0.55);
+}
+
+.footer-credit-name {
+  color: rgba(43, 39, 35, 0.75);
 }
 
 .footer-credit a {
@@ -1472,10 +1481,6 @@ img { max-width: 100%; display: block; }
 .footer-credit a:focus-visible {
   color: var(--accent-dark);
   border-bottom-color: currentColor;
-}
-
-.footer-credit-sep {
-  padding: 0 0.4em;
 }
 
 /* ---------- Responsive ---------- */
